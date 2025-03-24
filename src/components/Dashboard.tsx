@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { useState, useEffect } from "react";
+import Image from 'next/image';
 
 export default function Dashboard() {
     const [date, setDate] = useState("");
@@ -71,7 +72,13 @@ export default function Dashboard() {
                 {/*Image Preview */}
                 <Card>
                     <CardContent>
-                        <img src="https://gap.com.ph/cdn/shop/products/cn17484535_800x.jpg" alt="Product" className="w-full h-auto" />
+                        <Image
+                            src="https://gap.com.ph/cdn/shop/products/cn17484535_800x.jpg"
+                            className="w-full h-auto"
+                            alt="description"
+                            width={500}
+                            height={300}
+                        />
                     </CardContent>
                 </Card>
 
