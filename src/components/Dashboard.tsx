@@ -78,12 +78,6 @@ export default function Dashboard() {
             .catch((error) => console.error("Error fetching request detail:", error));
     };
 
-    const target = 432;
-    const pass = 334;
-    const inspect = 400;
-    const defectPercentage = 2;
-    const balance = pass - target;
-    const progressPercentage = Math.min(100, Math.round((334 / 432) * 100));
     const cumulativeData = [0, 0, 0, 0, 0, 0, 0, 20, 40, 60, 80, 100, 120, 120, 140, 160, 180, 200, 200, 200, 200, 200, 200, 200];
 
     return (
