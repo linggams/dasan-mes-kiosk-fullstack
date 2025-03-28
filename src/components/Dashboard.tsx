@@ -4,7 +4,7 @@ import {Card, CardContent} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Progress} from "@/components/ui/progress";
-import {useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import Image from 'next/image';
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter} from "@/components/ui/dialog";
 import {Label} from "@/components/ui/label";
@@ -32,30 +32,30 @@ export default function Dashboard() {
     }, []);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/kiosk/sewing?line=1`)
+        fetch('api/v1/kiosk/sewing?line=1')
             .then((response) => response.json())
             .then((data) => setRequests(data.data))
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/kiosk/master/buyers`)
+        fetch('api/v1/kiosk/master/buyers')
             .then((response) => response.json())
             .then((data) => setBuyers(data.data))
             .catch((error) => console.error("Error fetching buyers:", error));
 
-        fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/kiosk/master/styles`)
+        fetch('api/v1/kiosk/master/styles')
             .then((response) => response.json())
             .then((data) => setStyles(data.data))
             .catch((error) => console.error("Error fetching styles:", error));
 
-        fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/kiosk/master/supervisors`)
+        fetch('api/v1/kiosk/master/supervisors')
             .then((response) => response.json())
             .then((data) => setSupervisors(data.data))
             .catch((error) => console.error("Error fetching supervisors:", error));
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         fetch('api/v1/kiosk/sewing?line=1', {
             method: "POST",
