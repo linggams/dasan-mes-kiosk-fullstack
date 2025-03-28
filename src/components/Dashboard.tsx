@@ -11,6 +11,8 @@ import {Label} from "@/components/ui/label";
 import {Select, SelectTrigger, SelectValue, SelectContent, SelectItem} from "@/components/ui/select";
 
 export default function Dashboard() {
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
+
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
     //const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -33,7 +35,6 @@ export default function Dashboard() {
             target: number;
             inspect: number;
             pass: number;
-            cncm: number;
             balance: number;
             defectPercentage: number;
             progressPercentage: number;
@@ -71,7 +72,6 @@ export default function Dashboard() {
         supervisor_id: 0,
     });
 
-
     useEffect(() => {
         const interval = setInterval(() => {
             const now = new Date();
@@ -82,9 +82,9 @@ export default function Dashboard() {
     }, []);
 
     useEffect(() => {
-        fetch('api/v1/kiosk/sewing?line=1')
+        fetch(`${baseUrl}/kiosk/sewing?line=1`)
             .then((response) => response.json())
-            .then((data) => setRequests(data.requests as {
+            .then((data) => setRequests(data.data as {
                 id: number;
                 code: string;
                 status: string;
@@ -95,17 +95,17 @@ export default function Dashboard() {
     }, []);
 
     useEffect(() => {
-        fetch('api/v1/kiosk/master/buyers')
+        fetch(`${baseUrl}/kiosk/master/buyers`)
             .then((response) => response.json())
             .then((data) => setBuyers(data.data))
             .catch((error) => console.error("Error fetching buyers:", error));
 
-        fetch('api/v1/kiosk/master/styles')
+        fetch(`${baseUrl}/kiosk/master/styles`)
             .then((response) => response.json())
             .then((data) => setStyles(data.data))
             .catch((error) => console.error("Error fetching styles:", error));
 
-        fetch('api/v1/kiosk/master/supervisors')
+        fetch(`${baseUrl}/kiosk/master/supervisors`)
             .then((response) => response.json())
             .then((data) => setSupervisors(data.data))
             .catch((error) => console.error("Error fetching supervisors:", error));
@@ -113,7 +113,7 @@ export default function Dashboard() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        fetch('api/v1/kiosk/sewing?line=1', {
+        fetch(`${baseUrl}/kiosk/sewing?line=1`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(formData),
@@ -128,7 +128,7 @@ export default function Dashboard() {
     };
 
     const fetchRequestDetail = (reqId: number) => {
-        fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/kiosk/sewing/${reqId}?line=1`)
+        fetch(`${baseUrl}/kiosk/sewing/${reqId}?line=1`)
             .then((response) => response.json())
             .then((data) => setSelectedRequest(data.data))
             .catch((error) => console.error("Error fetching request detail:", error));

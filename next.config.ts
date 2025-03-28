@@ -4,10 +4,10 @@ const nextConfig: NextConfig = {
     images: {
         remotePatterns: [
             {
-                protocol: 'http',
-                hostname: "dppicms.test",
+                protocol: process.env.NEXT_PUBLIC_API_PROTOCOL,
+                hostname: process.env.NEXT_PUBLIC_API_BASE_URL?.replace("https://", "").replace("http://", ""),
                 port: "",
-                pathname: "/storage/**",
+                pathname: "/**",
             },
         ],
     },
@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
         return [
             {
                 source: "/api/:path*",
-                destination: "http://dppicms.test/api/:path*",
+                destination: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/:path*`,
             },
         ];
     },
