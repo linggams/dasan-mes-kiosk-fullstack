@@ -92,7 +92,7 @@ export default function Dashboard() {
                 style: string;
             }[]))
             .catch((error) => console.error("Error fetching data:", error));
-    }, []);
+    }, [baseUrl]);
 
     useEffect(() => {
         fetch(`${baseUrl}/kiosk/master/buyers`)
@@ -109,7 +109,7 @@ export default function Dashboard() {
             .then((response) => response.json())
             .then((data) => setSupervisors(data.data))
             .catch((error) => console.error("Error fetching supervisors:", error));
-    }, []);
+    }, [baseUrl]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
