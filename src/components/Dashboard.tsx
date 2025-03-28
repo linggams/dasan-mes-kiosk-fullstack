@@ -14,13 +14,63 @@ export default function Dashboard() {
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
     //const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [requests, setRequests] = useState([]);
-    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [requests, setRequests] = useState<{
+        id: number;
+        code: string;
+        status: string;
+        buyer: string;
+        style: string;
+    }[]>([]);
+
+    const [selectedRequest, setSelectedRequest] = useState<{
+        request_info: {
+            code: string;
+            buyer: string;
+            style: string;
+        };
+        image_preview: string;
+        order_info: {
+            target: number;
+            inspect: number;
+            pass: number;
+            cncm: number;
+            balance: number;
+            defectPercentage: number;
+            progressPercentage: number;
+        };
+        man_power: {
+            man_power: number;
+            man_operator: number;
+            helper: number;
+            iron: number;
+            qc: number;
+        };
+        defect_summary: {
+            total_defect: number;
+            skip_stitch: number;
+            broken_stitch: number;
+            puckering: number;
+            measurement: number;
+            seam: number;
+        };
+    } | null>(null);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [buyers, setBuyers] = useState([]);
-    const [styles, setStyles] = useState([]);
-    const [supervisors, setSupervisors] = useState([]);
-    const [formData, setFormData] = useState({buyer_id: "", order_id: "", line_id: 1, supervisor_id: ""});
+    const [buyers, setBuyers] = useState<{ id: number; name: string }[]>([]);
+    const [styles, setStyles] = useState<{ id: number; style: string }[]>([]);
+    const [supervisors, setSupervisors] = useState<{ id: number; name: string }[]>([]);
+    const [formData, setFormData] = useState<{
+        buyer_id: number;
+        order_id: number;
+        line_id: number;
+        supervisor_id: number;
+    }>({
+        buyer_id: 0,
+        order_id: 0,
+        line_id: 0,
+        supervisor_id: 0,
+    });
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -34,7 +84,13 @@ export default function Dashboard() {
     useEffect(() => {
         fetch('api/v1/kiosk/sewing?line=1')
             .then((response) => response.json())
-            .then((data) => setRequests(data.data))
+            .then((data) => setRequests(data.requests as {
+                id: number;
+                code: string;
+                status: string;
+                buyer: string;
+                style: string;
+            }[]))
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
 
@@ -95,7 +151,13 @@ export default function Dashboard() {
                 {/* Request List */}
                 <div className="space-y-1.5">
                     {requests ? (
-                        requests.map((request, index) => (
+                        requests.map((request: {
+                            id: number;
+                            code: string;
+                            status: string;
+                            buyer: string;
+                            style: string;
+                        }, index) => (
                             <button key={index}
                                     className="w-full bg-gray-100 p-2 rounded-lg hover:bg-gray-200 transition-colors text-left"
                                     onClick={() => fetchRequestDetail(request.id)}>
@@ -265,19 +327,19 @@ export default function Dashboard() {
                                         className="flex justify-between items-center p-2 bg-gray-50 rounded-lg border border-gray-100">
                                         <span className="text-gray-700 font-medium">Skip Stitch</span>
                                         <span
-                                            className="text-2xl font-bold text-gray-800">{selectedRequest?.defect_summary?.Skip_Stitch || 0}</span>
+                                            className="text-2xl font-bold text-gray-800">{selectedRequest?.defect_summary?.skip_stitch || 0}</span>
                                     </div>
                                     <div
                                         className="flex justify-between items-center p-2 bg-gray-50 rounded-lg border border-gray-100">
                                         <span className="text-gray-700 font-medium">Broken Stitch</span>
                                         <span
-                                            className="text-2xl font-bold text-gray-800">{selectedRequest?.defect_summary?.Broken_Stitch || 0}</span>
+                                            className="text-2xl font-bold text-gray-800">{selectedRequest?.defect_summary?.broken_stitch || 0}</span>
                                     </div>
                                     <div
                                         className="flex justify-between items-center p-2 bg-gray-50 rounded-lg border border-gray-100">
                                         <span className="text-gray-700 font-medium">Puckering</span>
                                         <span
-                                            className="text-2xl font-bold text-gray-800">{selectedRequest?.defect_summary?.Puckering || 0}</span>
+                                            className="text-2xl font-bold text-gray-800">{selectedRequest?.defect_summary?.puckering || 0}</span>
                                     </div>
                                 </div>
                             </div>
@@ -322,48 +384,59 @@ export default function Dashboard() {
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         <div>
                             <Label>Buyer</Label>
-                            <Select onValueChange={(value) => setFormData({...formData, buyer_id: Number(value)})}>
+                            <Select onValueChange={(value) => setFormData({ ...formData, buyer_id: Number(value) })}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select Buyer"/>
+                                    <SelectValue placeholder="Select Buyer" />
                                 </SelectTrigger>
                                 <SelectContent className="z-50 bg-white">
                                     {buyers?.map((buyer) => (
-                                        <SelectItem key={buyer.id} value={String(buyer.id)}>{buyer.name}</SelectItem>
+                                        <SelectItem key={buyer.id} value={String(buyer.id)}>
+                                            {buyer.name}
+                                        </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         </div>
+
                         <div>
                             <Label>Style</Label>
-                            <Select onValueChange={(value) => setFormData({...formData, order_id: Number(value)})}>
+                            <Select onValueChange={(value) => setFormData({ ...formData, order_id: Number(value) })}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select Style"/>
+                                    <SelectValue placeholder="Select Style" />
                                 </SelectTrigger>
                                 <SelectContent className="z-50 bg-white">
                                     {styles?.map((order) => (
-                                        <SelectItem key={order.id} value={String(order.id)}>{order.style}</SelectItem>
+                                        <SelectItem key={order.id} value={String(order.id)}>
+                                            {order.style}
+                                        </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         </div>
+
                         <div>
                             <Label>Supervisor</Label>
-                            <Select onValueChange={(value) => setFormData({...formData, supervisor_id: Number(value)})}>
+                            <Select onValueChange={(value) => setFormData({ ...formData, supervisor_id: Number(value) })}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select Supervisor"/>
+                                    <SelectValue placeholder="Select Supervisor" />
                                 </SelectTrigger>
                                 <SelectContent className="z-50 bg-white">
                                     {supervisors?.map((supervisor) => (
-                                        <SelectItem key={supervisor.id}
-                                                    value={String(supervisor.id)}>{supervisor.name}</SelectItem>
+                                        <SelectItem key={supervisor.id} value={String(supervisor.id)}>
+                                            {supervisor.name}
+                                        </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         </div>
+
                         <DialogFooter>
-                            <Button type="submit"
-                                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors font-medium">Submit
-                                Request</Button>
+                            <Button
+                                type="submit"
+                                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors font-medium"
+                            >
+                                Submit Request
+                            </Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
