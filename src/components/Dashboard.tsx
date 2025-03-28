@@ -71,7 +71,7 @@ export default function Dashboard() {
             .catch((error) => console.error("Error submitting request:", error));
     };
 
-    const fetchRequestDetail = (reqId) => {
+    const fetchRequestDetail = (reqId: number) => {
         fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/kiosk/sewing/${reqId}?line=1`)
             .then((response) => response.json())
             .then((data) => setSelectedRequest(data.data))
