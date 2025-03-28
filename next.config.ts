@@ -2,7 +2,22 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     images: {
-        domains: ['gap.com.ph'],
+        remotePatterns: [
+            {
+                protocol: 'http',
+                hostname: "dppicms.test",
+                port: "",
+                pathname: "/storage/**",
+            },
+        ],
+    },
+    async rewrites() {
+        return [
+            {
+                source: "/api/:path*",
+                destination: "http://dppicms.test/api/:path*",
+            },
+        ];
     },
 };
 

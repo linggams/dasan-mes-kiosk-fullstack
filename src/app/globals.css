@@ -105,4 +105,12 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    .backdrop {
+        z-index: 50;
+    }
+
+    .modal {
+        z-index: 60;
+    }
 }
