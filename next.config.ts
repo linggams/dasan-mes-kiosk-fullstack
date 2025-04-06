@@ -7,7 +7,6 @@ const hostname = process.env.NEXT_PUBLIC_API_BASE_URL
 const destination = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/:path*`
 
 const nextConfig: NextConfig = {
-    output: "export",
     images: {
         remotePatterns: [
             {
