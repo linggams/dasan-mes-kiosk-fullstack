@@ -1,11 +1,17 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import {useEffect, useState} from "react";
 
 export default function FactoryLine() {
-    const searchParams = useSearchParams();
-    const factory = searchParams.get("factory") || "?";
-    const line = searchParams.get("line") || "?";
+    const [factory, setFactory] = useState("1");
+    const [line, setLine] = useState("1");
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const factory = params.get("factory") ?? "1";
+        const line = params.get("line") ?? "1";
+        setFactory(factory);
+        setLine(line);
+    }, []);
 
     return (
         <div className="flex items-center gap-4">
