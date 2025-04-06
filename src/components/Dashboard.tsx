@@ -1,7 +1,6 @@
 "use client";
 
 import React, {useState, useEffect} from "react";
-import { useSearchParams } from "next/navigation";
 import {Button} from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,7 +17,7 @@ import OrderInfoCard from "@/components/cards/OrderInfoCard";
 import ManPowerCard from "@/components/cards/ManPowerCard";
 import DefectTypeCard from "@/components/cards/DefectTypeCard";
 import ProductionDataCard from "@/components/cards/ProductionDataCard";
-import {RequestData, ProductionData, RequestFormData, Request} from "@/types/request";
+import {RequestData, ProductionData, RequestFormData} from "@/types/request";
 import { OrderInfo } from "@/types/order";
 import { ManPower } from "@/types/order";
 import { DefectSummary } from "@/types/defect";
@@ -26,8 +25,12 @@ import RequestModal from "@/components/modal/RequestModal";
 
 export default function Dashboard() {
     const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
-    const searchParams = useSearchParams();
-    const line = searchParams.get("line") || "1";
+    const [line, setLine] = useState("1");
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const line = params.get("line") ?? "1";
+        setLine(line);
+    }, []);
 
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
@@ -46,7 +49,7 @@ export default function Dashboard() {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
-    const [selectedQrCode, setSelectedQrCode] = useState<number | null>(null);
+    const [selectedQrCode, setSelectedQrCode] = useState<string | null>(null);
     const [stage, setStage] = useState("");
     const [selectedRequest, setSelectedRequest] = useState<{
         request_info: RequestData;
@@ -109,7 +112,7 @@ export default function Dashboard() {
             mode: "cors",
         })
             .then((res) => res.json())
-            .then((data) => {
+            .then(() => {
                 toast.success("Request created successfully");
                 setIsRequestModalOpen(false);
                 setRefetchSignal((prev) => !prev);
@@ -159,8 +162,9 @@ export default function Dashboard() {
             if (!res.ok) throw new Error(result.errors);
 
             toast.success("Stage updated!");
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message);
         }
     };
 
@@ -249,7 +253,6 @@ export default function Dashboard() {
                                 <StageSelector
                                     value={stage}
                                     onChange={updateStage}
-                                    onStage={stage}
                                 />
 
                                 <div className="ml-auto">

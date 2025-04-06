@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Request } from "@/types/request";
 
@@ -13,8 +12,12 @@ type Props = {
 
 export default function RequestListPanel({ fetchRequestDetail, requestId, refetchSignal }: Props) {
     const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
-    const searchParams = useSearchParams();
-    const line = searchParams.get("line") || "1";
+    const [line, setLine] = useState("1");
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const line = params.get("line") ?? "1";
+        setLine(line);
+    }, []);
 
     const [requests, setRequests] = useState<Request[]>([]);
 
@@ -24,8 +27,9 @@ export default function RequestListPanel({ fetchRequestDetail, requestId, refetc
                 const res = await fetch(`${baseUrl}/kiosk/sewing?line=${line}`);
                 const data = await res.json();
                 setRequests(data.data);
-            } catch (err: any) {
-                toast.error(err.message);
+            } catch (err: unknown) {
+                const error = err as Error;
+                toast.error(error.message);
             }
         };
 

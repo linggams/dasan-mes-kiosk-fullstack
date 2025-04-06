@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import {useEffect, useState} from "react";
 import { Input } from "@/components/ui/input";
 import QrScanModal from "@/components/modal/QrScanModal";
 import { toast } from "sonner";
@@ -15,13 +14,17 @@ type Props = {
     requestId?: number | null;
     fetchRequestDetail: (id: number) => void;
     onQrCodeChange?: (code: string) => void;
-    onStage?: () => void;
+    onStage?: (stage: string) => void;
 };
 
 export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeChange, onStage }: Props) {
     const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
-    const searchParams = useSearchParams();
-    const line = searchParams.get("line") || "1";
+    const [line, setLine] = useState("1");
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const line = params.get("line") ?? "1";
+        setLine(line);
+    }, []);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -67,13 +70,13 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
             };
 
             onQrCodeChange?.(data.qr_number);
-            onStage?.();
+            onStage?.("process");
             setQrData(scannedData);
             setIsQrModalOpen(true);
             setSearchQuery("");
-        } catch (err: any) {
-            toast.error(err.message);
-            setSearchQuery("");
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message);
         }
     };
 
@@ -98,8 +101,9 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
             setIsQrModalOpen(false);
             setSearchQuery("");
             fetchRequestDetail(requestId);
-        } catch (err: any) {
-            toast.error(err.message || "Error passing item");
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message);
             setSearchQuery("");
         }
     };
@@ -140,9 +144,9 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
             setIsActionModalOpen(false);
             setSearchQuery("");
             setSelectedDefects([]);
-        } catch (err: any) {
-            toast.error(err.message);
-            setSearchQuery("");
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message);
         }
     };
 

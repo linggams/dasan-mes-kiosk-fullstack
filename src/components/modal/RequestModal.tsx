@@ -22,7 +22,7 @@ type Props = {
     supervisors: { id: number; name: string }[];
     formData: RequestFormData;
     setFormData: (data: RequestFormData) => void;
-    onSubmit: () => void;
+    onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 };
 
 export default function RequestModal({
