@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { Request } from "@/types/request";
+import { useRequestList } from "@/hooks/useRequestList";
 
 type Props = {
     fetchRequestDetail?: (id: number) => void;
@@ -11,7 +10,6 @@ type Props = {
 };
 
 export default function RequestListPanel({ fetchRequestDetail, requestId, refetchSignal }: Props) {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
     const [line, setLine] = useState("1");
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -19,22 +17,7 @@ export default function RequestListPanel({ fetchRequestDetail, requestId, refetc
         setLine(line);
     }, []);
 
-    const [requests, setRequests] = useState<Request[]>([]);
-
-    useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const res = await fetch(`${baseUrl}/kiosk/sewing?line=${line}`);
-                const data = await res.json();
-                setRequests(data.data);
-            } catch (err: unknown) {
-                const error = err as Error;
-                toast.error(error.message);
-            }
-        };
-
-        fetchRequests();
-    }, [baseUrl, line, refetchSignal]);
+    const { requests } = useRequestList(line, refetchSignal);
 
     return (
         <div>

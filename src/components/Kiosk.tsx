@@ -5,7 +5,6 @@ import {Button} from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
-import { toast } from "sonner";
 
 import FactoryLine from "@/components/FactoryLine";
 import RequestInfo from "@/components/RequestInfo";
@@ -17,15 +16,16 @@ import OrderInfoCard from "@/components/cards/OrderInfoCard";
 import ManPowerCard from "@/components/cards/ManPowerCard";
 import DefectTypeCard from "@/components/cards/DefectTypeCard";
 import ProductionDataCard from "@/components/cards/ProductionDataCard";
-import {RequestData, ProductionData, RequestFormData} from "@/types/request";
-import { OrderInfo } from "@/types/order";
-import { ManPower } from "@/types/order";
-import { DefectSummary } from "@/types/defect";
 import RequestModal from "@/components/modal/RequestModal";
 import FactoryPacking from "@/components/FactoryPacking";
 import QRScanCard from "@/components/cards/QrScanCard";
 import InformationCard from "@/components/cards/InformationCard";
-import { QRData } from "@/types/qr";
+
+import { usePackingScan } from "@/hooks/usePackingScan";
+import { useUpdateStage } from "@/hooks/useUpdateStage";
+import { useRequestDetail } from "@/hooks/useRequestDetail";
+import { useSubmitRequest } from "@/hooks/useSubmitRequest";
+import { useMasterData } from "@/hooks/useMasterData";
 
 interface Type {
     type: 'home' | 'packing';
@@ -47,30 +47,9 @@ export default function Kiosk({ type }: Type) {
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
 
-    const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
-    const [buyers, setBuyers] = useState<{ id: number; name: string }[]>([]);
-    const [styles, setStyles] = useState<{ id: number; style: string }[]>([]);
-    const [supervisors, setSupervisors] = useState<{ id: number; name: string }[]>([]);
-    const [refetchSignal, setRefetchSignal] = useState(false);
-    const [formData, setFormData] = useState<RequestFormData>({
-        buyer_id: undefined,
-        order_id: undefined,
-        line_id: undefined,
-        supervisor_id: undefined,
-    });
-
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
     const [selectedQrCode, setSelectedQrCode] = useState<string | null>(null);
     const [stage, setStage] = useState("");
-    const [selectedRequest, setSelectedRequest] = useState<{
-        request_info: RequestData;
-        image_preview: string;
-        order_info: OrderInfo;
-        man_power: ManPower;
-        defect_summary: DefectSummary;
-        production_data: ProductionData;
-    } | null>(null);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -89,22 +68,7 @@ export default function Kiosk({ type }: Type) {
     /**
      * Sewing: Create Request
      */
-    useEffect(() => {
-        fetch(`${baseUrl}/kiosk/master/buyers`)
-            .then((response) => response.json())
-            .then((data) => setBuyers(data.data))
-            .catch((error) => toast.error("Error fetching buyers:", error));
-
-        fetch(`${baseUrl}/kiosk/master/styles`)
-            .then((response) => response.json())
-            .then((data) => setStyles(data.data))
-            .catch((error) => toast.error("Error fetching styles:", error));
-
-        fetch(`${baseUrl}/kiosk/master/supervisors`)
-            .then((response) => response.json())
-            .then((data) => setSupervisors(data.data))
-            .catch((error) => toast.error("Error fetching supervisors:", error));
-    }, [baseUrl]);
+    const { buyers, styles, supervisors, defectTypes, loading } = useMasterData(baseUrl);
 
     const defaultFormData = {
         buyer_id: undefined,
@@ -117,133 +81,63 @@ export default function Kiosk({ type }: Type) {
         setIsRequestModalOpen(true);
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        fetch(`${baseUrl}/kiosk/sewing?line=${line}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-            mode: "cors",
-        })
-            .then((res) => res.json())
-            .then(() => {
-                toast.success("Request created successfully");
-                setIsRequestModalOpen(false);
-                setRefetchSignal((prev) => !prev);
-                setFormData(defaultFormData);
-            })
-            .catch((err) => {
-                toast.error(err.message);
-            });
-    };
+    const {
+        formData,
+        setFormData,
+        isRequestModalOpen,
+        setIsRequestModalOpen,
+        refetchSignal,
+        handleSubmit,
+    } = useSubmitRequest({
+        baseUrl,
+        line,
+        defaultFormData,
+    });
 
     /**
      * Sewing: Fetch Request Detail
      */
-    const fetchRequestDetail = (reqId: number) => {
-        setSelectedRequestId(reqId);
+    const {
+        selectedRequestId,
+        selectedRequest,
+        fetchRequestDetail,
+    } = useRequestDetail(baseUrl, line);
 
-        fetch(`${baseUrl}/kiosk/sewing/${reqId}?line=${line}`)
-            .then((response) => response.json())
-            .then((result) => {
-                if (result.status === "error") {
-                    toast.info(result.errors);
-                    setSelectedRequest(null);
-                    return;
-                }
-                setSelectedRequest(result.data);
-            })
-            .catch((error) => toast.error(error.message));
+    /**
+     * Sewing Get Defect Types
+     */
+    const defaultDefectData = Array.isArray(defectTypes)
+        ? defectTypes.reduce((acc, item) => {
+            acc[item.key] = 0;
+            return acc;
+        }, {} as Record<string, number>)
+        : {};
+
+    const defectData = {
+        ...defaultDefectData,
+        ...(selectedRequest?.defect_summary || {}),
     };
 
     /**
      * Sewing: Update Stage Request Item
      */
-    const updateStage = async (stage: string) => {
-        if (!selectedQrCode || !selectedRequestId) {
-            toast.error("Please scan the QR code first!");
-            return;
-        }
-
-        try {
-            const res = await fetch(`${baseUrl}/kiosk/sewing/stage?line=${line}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    request_id: selectedRequestId,
-                    qr_code: selectedQrCode,
-                    stage: stage
-                }),
-            });
-
-            const result = await res.json();
-            if (!res.ok) throw new Error(result.errors);
-
-            toast.success("Stage updated!");
-        } catch (err: unknown) {
-            const error = err as Error;
-            toast.error(error.message);
-        }
-    };
+    const { updateStage } = useUpdateStage({
+        baseUrl,
+        line,
+        selectedQrCode,
+        selectedRequestId,
+    });
 
     /**
      * Packing: Scan Qr Code
      */
-    const [count, setCount] = useState(0);
-    const [qrPackingData, setQrPackingData] = useState<QRData | undefined>();
-    const [imagePreview, setImagePreview] = useState("");
-    const [productionData, setProductionData] = useState<ProductionData | undefined>();
-
-    const handlePackingScan = async (qrCode: string) => {
-        if (!qrCode.trim()) return;
-
-        try {
-            const res = await fetch(`${baseUrl}/kiosk/packing/scan?packing=${packing}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    qr_code: qrCode.trim(),
-                }),
-            });
-
-            const result = await res.json();
-            if (!res.ok) {
-                const errorMsg = Array.isArray(result.errors)
-                    ? result.errors.join(", ")
-                    : result.errors || "Unknown error";
-                toast.warning(errorMsg);
-                return;
-            }
-
-            const data = result.data.qrData;
-            const imagePreview = result.data.imagePreview;
-            const counting = result.data.counting;
-            const productionData = result.data.productionData;
-
-            const scannedData: QRData = {
-                buyer: data.buyer_name,
-                style: data.style,
-                size: data.size,
-                color: data.color,
-                purchaseOrder: data.purchase_order,
-                destination: data.destination,
-                qrNumber: data.qr_number,
-            };
-
-            setImagePreview(imagePreview);
-            setQrPackingData(scannedData);
-            setProductionData(productionData);
-            setCount(counting);
-        } catch (err: unknown) {
-            const error = err as Error;
-            toast.error(error.message);
-        }
-    };
+    const {
+        count,
+        qrPackingData,
+        imagePreview,
+        productionData,
+        handlePackingScan,
+    } = usePackingScan({ baseUrl, packing });
 
 
     return (
@@ -370,7 +264,14 @@ export default function Kiosk({ type }: Type) {
 
                     {/* Defect Type */}
                     {type !== 'packing' && (
-                        <DefectTypeCard data={selectedRequest?.defect_summary} />
+                        <DefectTypeCard
+                            data={{
+                                ...defectData,
+                                ...(selectedRequest?.defect_summary || {}),
+                            }}
+                            types={defectTypes}
+                            loading={loading}
+                        />
                     )}
 
                     {/* Image Preview */}

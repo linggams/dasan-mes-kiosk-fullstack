@@ -1,3 +1,5 @@
+import {ManPower, OrderInfo} from "@/types/order";
+
 export type Request = {
     id: number;
     code: string;
