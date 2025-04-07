@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 
 type Props = {
-    data: {
+    data?: {
         actual: number[];
         cumulative: number[];
     };
@@ -28,13 +28,13 @@ export default function ProductionData({ data }: Props) {
                         <tbody>
                         <tr className="text-xs border-t">
                             <td className="py-1.5 px-2 font-medium text-gray-700">Actual</td>
-                            {data.actual.map((val, idx) => (
+                            {data?.actual.map((val, idx) => (
                                 <td key={idx} className="py-1.5 px-2 text-center">{val}</td>
                             ))}
                         </tr>
                         <tr className="text-xs border-t">
                             <td className="py-1.5 px-2 font-medium text-gray-700">Cumulative</td>
-                            {data.cumulative.map((val, idx) => (
+                            {data?.cumulative.map((val, idx) => (
                                 <td key={idx} className="py-1.5 px-2 text-center">{val}</td>
                             ))}
                         </tr>

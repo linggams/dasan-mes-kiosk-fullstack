@@ -22,14 +22,26 @@ import { OrderInfo } from "@/types/order";
 import { ManPower } from "@/types/order";
 import { DefectSummary } from "@/types/defect";
 import RequestModal from "@/components/modal/RequestModal";
+import FactoryPacking from "@/components/FactoryPacking";
+import QRScanCard from "@/components/cards/QrScanCard";
+import InformationCard from "@/components/cards/InformationCard";
+import { QRData } from "@/types/qr";
 
-export default function Dashboard() {
+interface Type {
+    type: 'home' | 'packing';
+}
+
+export default function Kiosk({ type }: Type) {
     const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
+
     const [line, setLine] = useState("1");
+    const [packing, setPacking] = useState("1");
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const line = params.get("line") ?? "1";
+        const packing = params.get("packing") ?? "1";
         setLine(line);
+        setPacking(packing);
     }, []);
 
     const [date, setDate] = useState("");
@@ -74,6 +86,9 @@ export default function Dashboard() {
         return () => clearInterval(interval);
     }, []);
 
+    /**
+     * Sewing: Create Request
+     */
     useEffect(() => {
         fetch(`${baseUrl}/kiosk/master/buyers`)
             .then((response) => response.json())
@@ -123,6 +138,9 @@ export default function Dashboard() {
             });
     };
 
+    /**
+     * Sewing: Fetch Request Detail
+     */
     const fetchRequestDetail = (reqId: number) => {
         setSelectedRequestId(reqId);
 
@@ -139,6 +157,9 @@ export default function Dashboard() {
             .catch((error) => toast.error(error.message));
     };
 
+    /**
+     * Sewing: Update Stage Request Item
+     */
     const updateStage = async (stage: string) => {
         if (!selectedQrCode || !selectedRequestId) {
             toast.error("Please scan the QR code first!");
@@ -168,6 +189,63 @@ export default function Dashboard() {
         }
     };
 
+    /**
+     * Packing: Scan Qr Code
+     */
+    const [count, setCount] = useState(0);
+    const [qrPackingData, setQrPackingData] = useState<QRData | undefined>();
+    const [imagePreview, setImagePreview] = useState("");
+    const [productionData, setProductionData] = useState<ProductionData | undefined>();
+
+    const handlePackingScan = async (qrCode: string) => {
+        if (!qrCode.trim()) return;
+
+        try {
+            const res = await fetch(`${baseUrl}/kiosk/packing/scan?packing=${packing}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    qr_code: qrCode.trim(),
+                }),
+            });
+
+            const result = await res.json();
+            if (!res.ok) {
+                const errorMsg = Array.isArray(result.errors)
+                    ? result.errors.join(", ")
+                    : result.errors || "Unknown error";
+                toast.warning(errorMsg);
+                return;
+            }
+
+            const data = result.data.qrData;
+            const imagePreview = result.data.imagePreview;
+            const counting = result.data.counting;
+            const productionData = result.data.productionData;
+
+            const scannedData: QRData = {
+                buyer: data.buyer_name,
+                style: data.style,
+                size: data.size,
+                color: data.color,
+                purchaseOrder: data.purchase_order,
+                destination: data.destination,
+                qrNumber: data.qr_number,
+            };
+
+            setImagePreview(imagePreview);
+            setQrPackingData(scannedData);
+            setProductionData(productionData);
+            setCount(counting);
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message);
+        }
+    };
+
+
     return (
         <div className="flex">
             {/* Toggle Button for Mobile */}
@@ -187,40 +265,42 @@ export default function Dashboard() {
             )}
 
             {/* Sidebar */}
-            <div
-                id="sidebar"
-                className={`fixed left-0 top-0 h-screen w-64 bg-white/95 backdrop-blur-sm border-r border-gray-200 p-4 z-40 transform transition-transform duration-300 ${
-                    isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-                }`}
-            >
-                {/* Close Button (visible only on small screens) */}
-                <div className="mb-4 flex justify-end">
-                    <Button size="icon" variant="ghost" onClick={() => setIsSidebarOpen(false)}>
-                        <FontAwesomeIcon icon={faTimes} className="text-xl text-gray-500" />
-                    </Button>
-                </div>
+            {type !== 'packing' && (
+                <div
+                    id="sidebar"
+                    className={`fixed left-0 top-0 h-screen w-64 bg-white/95 backdrop-blur-sm border-r border-gray-200 p-4 z-40 transform transition-transform duration-300 ${
+                        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                    }`}
+                >
+                    {/* Close Button (visible only on small screens) */}
+                    <div className="mb-4 flex justify-end">
+                        <Button size="icon" variant="ghost" onClick={() => setIsSidebarOpen(false)}>
+                            <FontAwesomeIcon icon={faTimes} className="text-xl text-gray-500" />
+                        </Button>
+                    </div>
 
-                {/* Request Button */}
-                <div className="mb-4">
-                    <Button
-                        className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors"
-                        onClick={handleOpenRequestModal}
-                    >
-                        Request
-                    </Button>
-                </div>
+                    {/* Request Button */}
+                    <div className="mb-4">
+                        <Button
+                            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors"
+                            onClick={handleOpenRequestModal}
+                        >
+                            Request
+                        </Button>
+                    </div>
 
-                <div className="overflow-y-auto h-[calc(100vh-120px)] pr-1">
-                    <RequestListPanel
-                        fetchRequestDetail={fetchRequestDetail}
-                        requestId={selectedRequestId ?? undefined}
-                        refetchSignal={refetchSignal}
-                    />
+                    <div className="overflow-y-auto h-[calc(100vh-120px)] pr-1">
+                        <RequestListPanel
+                            fetchRequestDetail={fetchRequestDetail}
+                            requestId={selectedRequestId ?? undefined}
+                            refetchSignal={refetchSignal}
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Main Content */}
-            <div className={`p-6 space-y-6 transition-all w-full ${isSidebarOpen ? "ml-64" : ""}`}>
+            <div className={`p-6 space-y-6 transition-all w-full ${type !== 'packing' &&  isSidebarOpen ? "ml-64" : ""}`}>
                 {/* Header */}
                 <Card className="p-4 bg-white/80 border border-gray-200">
                     <div className="grid grid-cols-2 items-center">
@@ -228,7 +308,7 @@ export default function Dashboard() {
                             <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                                 <FontAwesomeIcon icon={faBars} />
                             </Button>
-                            <FactoryLine />
+                            {type === 'packing' ? <FactoryPacking /> : <FactoryLine />}
                         </div>
 
                         <div className="flex items-center justify-end space-x-4">
@@ -239,54 +319,83 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Info Bar */}
-                <Card className="p-4 bg-white/80 border border-gray-200">
-                    {selectedRequest && (
-                        <div className="flex space-x-4">
-                            <RequestInfo
-                                code={selectedRequest?.request_info?.code}
-                                buyer={selectedRequest?.request_info?.buyer}
-                                style={selectedRequest?.request_info?.style}
-                            />
-
-
-                            <div className="flex ml-auto pull-right">
-                                <StageSelector
-                                    value={stage}
-                                    onChange={updateStage}
+                {type !== 'packing' && (
+                    <Card className="p-4 bg-white/80 border border-gray-200">
+                        {selectedRequest && (
+                            <div className="flex space-x-4">
+                                <RequestInfo
+                                    code={selectedRequest?.request_info?.code}
+                                    buyer={selectedRequest?.request_info?.buyer}
+                                    style={selectedRequest?.request_info?.style}
                                 />
 
-                                <div className="ml-auto">
-                                    <QrScanInput
-                                        requestId={selectedRequestId ?? undefined}
-                                        fetchRequestDetail={fetchRequestDetail}
-                                        onQrCodeChange={(data) => setSelectedQrCode(data)}
-                                        onStage={() => setStage("process")}
-                                    />
-                                </div>
 
+                                <div className="flex ml-auto pull-right">
+                                    <StageSelector
+                                        value={stage}
+                                        onChange={updateStage}
+                                    />
+
+                                    <div className="ml-auto">
+                                        <QrScanInput
+                                            requestId={selectedRequestId ?? undefined}
+                                            fetchRequestDetail={fetchRequestDetail}
+                                            onQrCodeChange={(data) => setSelectedQrCode(data)}
+                                            onStage={() => setStage("process")}
+                                        />
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </Card>
+                        )}
+                    </Card>
+                )}
 
                 {/* Order Information & Metrics */}
                 <div className="grid grid-cols-4 gap-4">
-                    {/*Image Preview */}
-                    <ImagePreviewCard data={selectedRequest?.image_preview} />
+                    {/* Image Preview */}
+                    {type !== 'packing' && (
+                        <ImagePreviewCard data={selectedRequest?.image_preview} />
+                    )}
 
                     {/* Order Information */}
-                    <OrderInfoCard data={selectedRequest?.order_info} />
+                    {type !== 'packing' && (
+                        <OrderInfoCard data={selectedRequest?.order_info} />
+                    )}
 
                     {/* Man Power */}
-                    <ManPowerCard data={selectedRequest?.man_power} />
+                    {type !== 'packing' && (
+                        <ManPowerCard data={selectedRequest?.man_power} />
+                    )}
 
                     {/* Defect Type */}
-                    <DefectTypeCard data={selectedRequest?.defect_summary} />
+                    {type !== 'packing' && (
+                        <DefectTypeCard data={selectedRequest?.defect_summary} />
+                    )}
+
+                    {/* Image Preview */}
+                    {type === 'packing' && (
+                        <ImagePreviewCard data={imagePreview} />
+                    )}
+
+                    {/* Information */}
+                    {type === 'packing' && (
+                        <InformationCard data={qrPackingData} />
+                    )}
+
+                    {/* Qr Code */}
+                    {type === 'packing' && (
+                        <QRScanCard count={count} onScan={handlePackingScan} />
+                    )}
                 </div>
 
                 {/* Production Data Table */}
-                {selectedRequest?.production_data && (
-                    <ProductionDataCard data={selectedRequest.production_data} />
+                {type !== 'packing' && (
+                    <ProductionDataCard data={selectedRequest?.production_data} />
+                )}
+
+                {type === 'packing' && (
+                    <ProductionDataCard data={productionData} />
                 )}
             </div>
 

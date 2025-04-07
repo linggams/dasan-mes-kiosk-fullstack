@@ -2,10 +2,10 @@
 
 import Kiosk from "@/components/Kiosk";
 
-export default function Home() {
+export default function PackingPage() {
     return (
         <div className="min-h-screen bg-gray-100 p-4">
-            <Kiosk />
+            <Kiosk type="packing" />
         </div>
     );
 }

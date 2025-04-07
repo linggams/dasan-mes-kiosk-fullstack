@@ -97,7 +97,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
 
             if (!res.ok) throw new Error("Failed to pass item");
 
-            onStage?.("process");
+            onStage?.("finishing");
             setIsQrModalOpen(false);
             setSearchQuery("");
             fetchRequestDetail(requestId);
@@ -140,7 +140,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
             if (!res.ok) throw new Error(result?.message);
 
             fetchRequestDetail(requestId);
-            onStage?.("process");
+            onStage?.("finishing");
             setIsActionModalOpen(false);
             setSearchQuery("");
             setSelectedDefects([]);
