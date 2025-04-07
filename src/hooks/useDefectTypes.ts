@@ -23,7 +23,7 @@ export function useDefectTypes() {
         }
 
         fetchDefectTypes();
-    }, []);
+    }, [baseUrl]);
 
     return { defectTypes, loading };
 }

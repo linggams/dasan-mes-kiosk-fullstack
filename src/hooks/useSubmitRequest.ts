@@ -8,7 +8,7 @@ type UseSubmitRequestProps<T> = {
     defaultFormData: T;
 };
 
-export const useSubmitRequest = <T extends Record<string, any>>({
+export const useSubmitRequest = <T extends Record<string, unknown>>({
                                                                     baseUrl,
                                                                     line,
                                                                     defaultFormData,
