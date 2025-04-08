@@ -44,7 +44,7 @@ export default function DefectTypeModal({ open, onClose, onBack, onSelect, types
                         Select Defect Type
                     </h3>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
                         {types.map((item) => (
                                 <label
                                     key={item.key}
