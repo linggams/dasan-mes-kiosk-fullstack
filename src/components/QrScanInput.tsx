@@ -95,7 +95,8 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                 }),
             });
 
-            if (!res.ok) throw new Error("Failed to pass item");
+            const result = await res.json();
+            if (!res.ok) throw new Error(result?.error);
 
             onStage?.("finishing");
             setIsQrModalOpen(false);
@@ -137,7 +138,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
             });
 
             const result = await res.json();
-            if (!res.ok) throw new Error(result?.message);
+            if (!res.ok) throw new Error(result?.error);
 
             fetchRequestDetail(requestId);
             onStage?.("finishing");
