@@ -38,11 +38,12 @@ export default function DefectTypeCard({ data, types, loading }: Props) {
               </span>
                         </div>
 
-                        <div className="bg-white/80 p-6 rounded-xl backdrop-blur-sm border border-gray-200">
+                        <div className="bg-white/80 p-6 rounded-xl backdrop-blur-sm border border-gray-200 max-h-[32rem] overflow-y-auto">
                             <div className="space-y-2">
                                 {Array.isArray(types) &&
                                     types
                                         .filter((type) => type.key !== "total_defect")
+                                        .sort((a, b) => (data?.[b.key] ?? 0) - (data?.[a.key] ?? 0))
                                         .map((type) => (
                                             <div
                                                 key={type.key}

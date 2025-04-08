@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import { Input } from "@/components/ui/input";
 import QrScanModal from "@/components/modal/QrScanModal";
 import { toast } from "sonner";
@@ -54,6 +54,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                     ? result.errors.join(", ")
                     : result.errors || "Unknown error";
                 toast.warning(errorMsg);
+                setSearchQuery("");
                 return;
             }
 
@@ -77,6 +78,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
         } catch (err: unknown) {
             const error = err as Error;
             toast.error(error.message);
+            setSearchQuery("");
         }
     };
 
@@ -148,6 +150,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
         } catch (err: unknown) {
             const error = err as Error;
             toast.error(error.message);
+            setSearchQuery("");
         }
     };
 
@@ -156,6 +159,17 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
         setIsDefectTypeModalOpen(true);
     };
 
+    const inputRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+
+    useEffect(() => {
+        if (!isQrModalOpen && !isDefectTypeModalOpen && !isActionModalOpen) {
+            inputRef.current?.focus();
+        }
+    }, [isQrModalOpen, isDefectTypeModalOpen, isActionModalOpen]);
+
     return (
         <div className="ml-auto flex items-center border border-gray-300 rounded-lg px-3 w-72 bg-white">
             <FontAwesomeIcon
@@ -163,6 +177,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                 className="text-blue-500 text-xl mr-2"
             />
             <Input
+                ref={inputRef}
                 type="text"
                 placeholder="Scan QR Code..."
                 value={searchQuery}
