@@ -49,12 +49,12 @@ export default function DefectTypeCard({ data, types, loading }: Props) {
                                                 key={type.key}
                                                 className="flex justify-between items-center p-2 bg-gray-50 rounded-lg border border-gray-100"
                                             >
-                        <span className="text-gray-700 font-medium">
-                          {type.label}
-                        </span>
+                                                <span className="text-gray-700 font-medium">
+                                                  {type.label}
+                                                </span>
                                                 <span className="text-2xl font-bold text-gray-800">
-                          {data?.[type.key] ?? 0}
-                        </span>
+                                                  {data?.[type.key] ?? 0}
+                                                </span>
                                             </div>
                                         ))}
                             </div>

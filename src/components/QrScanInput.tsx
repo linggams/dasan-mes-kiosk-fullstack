@@ -9,15 +9,17 @@ import DefectTypeModal from "@/components/modal/DefectTypeModal";
 import ActionModal from "@/components/modal/ActionModal";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
+import {MasterDefectType} from "@/hooks/useMasterData";
 
 type Props = {
     requestId?: number | null;
     fetchRequestDetail: (id: number) => void;
     onQrCodeChange?: (code: string) => void;
     onStage?: (stage: string) => void;
+    defectTypes: MasterDefectType[];
 };
 
-export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeChange, onStage }: Props) {
+export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeChange, onStage, defectTypes }: Props) {
     const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
     const [line, setLine] = useState("1");
     useEffect(() => {
@@ -31,7 +33,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
     const [qrData, setQrData] = useState<QRData | null>(null);
     const [isDefectTypeModalOpen, setIsDefectTypeModalOpen] = useState(false);
     const [isActionModalOpen, setIsActionModalOpen] = useState(false);
-    const [selectedDefects, setSelectedDefects] = useState<{ id: number; name: string }[]>([]);
+    const [selectedDefects, setSelectedDefects] = useState<MasterDefectType[]>([]);
 
     const handleScan = async () => {
         if (!searchQuery.trim() || !requestId) return;
@@ -134,7 +136,10 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                 body: JSON.stringify({
                     request_id: requestId,
                     qr_code: qrData.qrNumber,
-                    defects: selectedDefects.map((d) => ({ id: d.id })),
+                    defects: selectedDefects.map((d) => ({
+                        key: d.key,
+                        label: d.label
+                    })),
                     is_rework: isRework,
                 }),
             });
@@ -146,11 +151,12 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
             onStage?.("finishing");
             setIsActionModalOpen(false);
             setSearchQuery("");
-            setSelectedDefects([]);
         } catch (err: unknown) {
             const error = err as Error;
             toast.error(error.message);
             setSearchQuery("");
+        } finally {
+            setSelectedDefects([]);
         }
     };
 
@@ -210,6 +216,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                     setIsDefectTypeModalOpen(false);
                     setIsActionModalOpen(true);
                 }}
+                types={defectTypes}
             />
 
             {/* Modal Action Selection */}

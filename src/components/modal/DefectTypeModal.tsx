@@ -3,35 +3,27 @@
 import React, { useState } from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-
-type Defect = { id: number; name: string };
+import {MasterDefectType} from "@/hooks/useMasterData";
 
 type Props = {
     open: boolean;
     onClose: () => void;
     onBack: () => void;
-    onSelect: (defects: Defect[]) => void;
+    onSelect: (defects: MasterDefectType[]) => void;
+    types: MasterDefectType[];
 };
 
-const defectOptions: Defect[] = [
-    { id: 1, name: "Skip Stitch" },
-    { id: 2, name: "Broken Stitch" },
-    { id: 3, name: "Puckering" },
-    { id: 4, name: "Measurement" },
-    { id: 5, name: "Seam" },
-];
+export default function DefectTypeModal({ open, onClose, onBack, onSelect, types }: Props) {
+    const [selectedDefects, setSelectedDefects] = useState<string[]>([]);
 
-export default function DefectTypeModal({ open, onClose, onBack, onSelect }: Props) {
-    const [selectedDefects, setSelectedDefects] = useState<number[]>([]);
-
-    const toggleDefect = (id: number) => {
+    const toggleDefect = (key: string) => {
         setSelectedDefects((prev) =>
-            prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]
+            prev.includes(key) ? prev.filter((d) => d !== key) : [...prev, key]
         );
     };
 
     const handleNext = () => {
-        const selected = defectOptions.filter((d) => selectedDefects.includes(d.id));
+        const selected = types.filter((d) => selectedDefects.includes(d.key));
         onSelect(selected);
     };
 
@@ -53,18 +45,18 @@ export default function DefectTypeModal({ open, onClose, onBack, onSelect }: Pro
                     </h3>
 
                     <div className="space-y-3">
-                        {defectOptions.map((item) => (
+                        {types.map((item) => (
                                 <label
-                                    key={item.id}
+                                    key={item.key}
                                     className="flex items-center space-x-4 w-full px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer text-lg"
                                 >
                                     <input
                                         type="checkbox"
-                                        checked={selectedDefects.includes(item.id)}
-                                        onChange={() => toggleDefect(item.id)}
+                                        checked={selectedDefects.includes(item.key)}
+                                        onChange={() => toggleDefect(item.key)}
                                         className="h-5 w-5 text-blue-500 rounded border-gray-300"
                                     />
-                                    <span>{item.name}</span>
+                                    <span>{item.label}</span>
                                 </label>
                             )
                         )}

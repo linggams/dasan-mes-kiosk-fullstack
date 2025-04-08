@@ -16,7 +16,7 @@ export type MasterSupervisor = {
     name: string;
 };
 
-export type DefectType = {
+export type MasterDefectType = {
     key: string;
     label: string;
 };
@@ -25,7 +25,7 @@ export const useMasterData = (baseUrl: string) => {
     const [buyers, setBuyers] = useState<MasterBuyer[]>([]);
     const [styles, setStyles] = useState<MasterStyle[]>([]);
     const [supervisors, setSupervisors] = useState<MasterSupervisor[]>([]);
-    const [defectTypes, setDefectTypes] = useState<DefectType[]>([]);
+    const [defectTypes, setDefectTypes] = useState<MasterDefectType[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

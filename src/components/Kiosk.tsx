@@ -236,6 +236,7 @@ export default function Kiosk({ type }: Type) {
                                             fetchRequestDetail={fetchRequestDetail}
                                             onQrCodeChange={(data) => setSelectedQrCode(data)}
                                             onStage={() => setStage("process")}
+                                            defectTypes={defectTypes}
                                         />
                                     </div>
 
