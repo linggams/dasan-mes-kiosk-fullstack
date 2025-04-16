@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default function StageSelector({ value, onChange }: Props) {
-    const stages = ["process", "finishing", "washing"];
+    const stages = ["finishing", "washing"];
 
     return (
         <div className="flex space-x-2 mr-5">
