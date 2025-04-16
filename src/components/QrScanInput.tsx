@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import {useEffect, useState, useRef} from "react";
 import { Input } from "@/components/ui/input";
 import QrScanModal from "@/components/modal/QrScanModal";
 import { toast } from "sonner";
@@ -10,25 +9,31 @@ import DefectTypeModal from "@/components/modal/DefectTypeModal";
 import ActionModal from "@/components/modal/ActionModal";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
+import {MasterDefectType} from "@/hooks/useMasterData";
 
 type Props = {
     requestId?: number | null;
     fetchRequestDetail: (id: number) => void;
     onQrCodeChange?: (code: string) => void;
-    onStage?: () => void;
+    onStage?: (stage: string) => void;
+    defectTypes: MasterDefectType[];
 };
 
-export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeChange, onStage }: Props) {
+export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeChange, onStage, defectTypes }: Props) {
     const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
-    const searchParams = useSearchParams();
-    const line = searchParams.get("line") || "1";
+    const [line, setLine] = useState("1");
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const line = params.get("line") ?? "1";
+        setLine(line);
+    }, []);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [isQrModalOpen, setIsQrModalOpen] = useState(false);
     const [qrData, setQrData] = useState<QRData | null>(null);
     const [isDefectTypeModalOpen, setIsDefectTypeModalOpen] = useState(false);
     const [isActionModalOpen, setIsActionModalOpen] = useState(false);
-    const [selectedDefects, setSelectedDefects] = useState<{ id: number; name: string }[]>([]);
+    const [selectedDefects, setSelectedDefects] = useState<MasterDefectType[]>([]);
 
     const handleScan = async () => {
         if (!searchQuery.trim() || !requestId) return;
@@ -51,6 +56,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                     ? result.errors.join(", ")
                     : result.errors || "Unknown error";
                 toast.warning(errorMsg);
+                setSearchQuery("");
                 return;
             }
 
@@ -67,12 +73,13 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
             };
 
             onQrCodeChange?.(data.qr_number);
-            onStage?.();
+            onStage?.("process");
             setQrData(scannedData);
             setIsQrModalOpen(true);
             setSearchQuery("");
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message);
             setSearchQuery("");
         }
     };
@@ -92,14 +99,16 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                 }),
             });
 
-            if (!res.ok) throw new Error("Failed to pass item");
+            const result = await res.json();
+            if (!res.ok) throw new Error(result?.error);
 
-            onStage?.("process");
+            onStage?.("finishing");
             setIsQrModalOpen(false);
             setSearchQuery("");
             fetchRequestDetail(requestId);
-        } catch (err: any) {
-            toast.error(err.message || "Error passing item");
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message);
             setSearchQuery("");
         }
     };
@@ -127,22 +136,27 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                 body: JSON.stringify({
                     request_id: requestId,
                     qr_code: qrData.qrNumber,
-                    defects: selectedDefects.map((d) => ({ id: d.id })),
+                    defects: selectedDefects.map((d) => ({
+                        key: d.key,
+                        label: d.label
+                    })),
                     is_rework: isRework,
                 }),
             });
 
             const result = await res.json();
-            if (!res.ok) throw new Error(result?.message);
+            if (!res.ok) throw new Error(result?.error);
 
             fetchRequestDetail(requestId);
-            onStage?.("process");
+            onStage?.("finishing");
             setIsActionModalOpen(false);
             setSearchQuery("");
-            setSelectedDefects([]);
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as Error;
+            toast.error(error.message);
             setSearchQuery("");
+        } finally {
+            setSelectedDefects([]);
         }
     };
 
@@ -151,6 +165,17 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
         setIsDefectTypeModalOpen(true);
     };
 
+    const inputRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+
+    useEffect(() => {
+        if (!isQrModalOpen && !isDefectTypeModalOpen && !isActionModalOpen) {
+            inputRef.current?.focus();
+        }
+    }, [isQrModalOpen, isDefectTypeModalOpen, isActionModalOpen]);
+
     return (
         <div className="ml-auto flex items-center border border-gray-300 rounded-lg px-3 w-72 bg-white">
             <FontAwesomeIcon
@@ -158,6 +183,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                 className="text-blue-500 text-xl mr-2"
             />
             <Input
+                ref={inputRef}
                 type="text"
                 placeholder="Scan QR Code..."
                 value={searchQuery}
@@ -190,6 +216,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                     setIsDefectTypeModalOpen(false);
                     setIsActionModalOpen(true);
                 }}
+                types={defectTypes}
             />
 
             {/* Modal Action Selection */}

@@ -1,3 +1,5 @@
+"use client";
+
 type Props = {
     code?: string;
     buyer?: string;

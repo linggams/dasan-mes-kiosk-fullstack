@@ -5,9 +5,10 @@ type OrderInfo = {
     target: number;
     inspect: number;
     pass: number;
-    defectPercentage: number;
+    cncm: number;
+    defect_percentage: number;
     balance: number;
-    progressPercentage: number;
+    progress_percentage: number;
 };
 
 type Props = {
