@@ -16,7 +16,6 @@ type Props = {
 };
 
 export default function OrderInfoCard({ data }: Props) {
-    // @ts-ignore
     return (
         <Card className="bg-white rounded-xl shadow-xl border-none">
             <CardContent>
@@ -47,10 +46,10 @@ export default function OrderInfoCard({ data }: Props) {
                             <p className="text-base text-gray-500">Balance</p>
                             <p
                                 className={`text-xl font-bold mt-1 ${
-                                    data!.balance >= 0 ? 'text-green-600' : 'text-red-600'
+                                    data?.balance !== undefined && data.balance >= 0 ? 'text-green-600' : 'text-red-600'
                                 }`}
                             >
-                                {data!.balance}
+                                {data?.balance ?? 0}
                             </p>
                             <p className="text-sm text-gray-500">Remaining target</p>
                         </div>
