@@ -77,18 +77,25 @@ export default function RequestModal({
                             <div>
                                 <Label className="mb-2">Style</Label>
                                 <Select
-                                    onValueChange={(value) =>
-                                        setFormData({ ...formData, order_id: Number(value) })
-                                    }
-                                    value={formData.order_id ? String(formData.order_id) : undefined}
+                                    onValueChange={(value) => {
+                                        const selected = styles.find((style) => style.id === Number(value));
+                                        if (selected) {
+                                            setFormData({
+                                                ...formData,
+                                                cutting_id: selected.id
+                                            });
+                                        }
+                                    }}
+                                    value={formData.cutting_id ? String(formData.cutting_id) : undefined}
+                                    disabled={!formData.buyer_id}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select Style" />
                                     </SelectTrigger>
                                     <SelectContent className="w-full z-50 bg-white">
-                                        {styles?.map((order) => (
-                                            <SelectItem key={order.id} value={String(order.id)}>
-                                                {order.style}
+                                        {styles?.map((cutting) => (
+                                            <SelectItem key={cutting.id} value={String(cutting.id)}>
+                                                {cutting.style}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

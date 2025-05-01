@@ -2,8 +2,9 @@
 
 import {useEffect, useState} from "react";
 
+const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
+
 export default function FactoryPacking() {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
 
     const [factoryName, setFactoryName] = useState("");
     const [packingName, setPackingName] = useState("");
