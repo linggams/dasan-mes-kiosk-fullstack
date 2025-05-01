@@ -17,7 +17,7 @@ export const useSubmitRequest = <T extends Record<string, unknown>>({
     const [refetchSignal, setRefetchSignal] = useState(false);
     const [formData, setFormData] = useState<RequestFormData>({
         buyer_id: undefined,
-        order_id: undefined,
+        cutting_id: undefined,
         line_id: undefined,
         supervisor_id: undefined,
     });

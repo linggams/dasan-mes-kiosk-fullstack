@@ -2,9 +2,9 @@
 
 import {useEffect, useState} from "react";
 
-export default function FactoryLine() {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
+const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
 
+export default function FactoryLine() {
     const [factoryName, setFactoryName] = useState("");
     const [lineName, setLineName] = useState("");
 
