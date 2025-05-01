@@ -77,10 +77,17 @@ export default function RequestModal({
                             <div>
                                 <Label className="mb-2">Style</Label>
                                 <Select
-                                    onValueChange={(value) =>
-                                        setFormData({ ...formData, cutting_id: Number(value) })
-                                    }
+                                    onValueChange={(value) => {
+                                        const selected = styles.find((style) => style.id === Number(value));
+                                        if (selected) {
+                                            setFormData({
+                                                ...formData,
+                                                cutting_id: selected.id
+                                            });
+                                        }
+                                    }}
                                     value={formData.cutting_id ? String(formData.cutting_id) : undefined}
+                                    disabled={!formData.buyer_id}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select Style" />

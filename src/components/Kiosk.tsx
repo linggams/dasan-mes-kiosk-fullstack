@@ -68,17 +68,10 @@ export default function Kiosk({ type }: Type) {
     /**
      * Sewing: Create Request
      */
-    const { buyers, styles, supervisors, defectTypes, loading } = useMasterData(baseUrl);
-
     const defaultFormData = {
         buyer_id: undefined,
-        order_id: undefined,
+        cutting_id: undefined,
         supervisor_id: undefined,
-    };
-
-    const handleOpenRequestModal = () => {
-        setFormData(defaultFormData);
-        setIsRequestModalOpen(true);
     };
 
     const {
@@ -93,6 +86,23 @@ export default function Kiosk({ type }: Type) {
         line,
         defaultFormData,
     });
+
+    const {
+        buyers,
+        styles,
+        supervisors,
+        defectTypes,
+        loading
+    } = useMasterData(
+        baseUrl,
+        formData.buyer_id
+    );
+
+    const handleOpenRequestModal = () => {
+        setFormData(defaultFormData);
+        setIsRequestModalOpen(true);
+    };
+
 
     /**
      * Sewing: Fetch Request Detail
