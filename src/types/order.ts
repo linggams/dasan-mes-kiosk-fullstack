@@ -1,4 +1,5 @@
 export type OrderInfo = {
+    date: string;
     target: number;
     inspect: number;
     pass: number;
