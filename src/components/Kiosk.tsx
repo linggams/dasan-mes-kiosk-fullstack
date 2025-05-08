@@ -1,7 +1,7 @@
 "use client";
 
-import React, {useState, useEffect} from "react";
-import {Button} from "@/components/ui/button";
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
@@ -28,11 +28,11 @@ import { useSubmitRequest } from "@/hooks/useSubmitRequest";
 import { useMasterData } from "@/hooks/useMasterData";
 
 interface Type {
-    type: 'home' | 'packing';
+    type: "home" | "packing";
 }
 
 export default function Kiosk({ type }: Type) {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
 
     const [line, setLine] = useState("1");
     const [packing, setPacking] = useState("1");
@@ -87,13 +87,7 @@ export default function Kiosk({ type }: Type) {
         defaultFormData,
     });
 
-    const {
-        buyers,
-        styles,
-        supervisors,
-        defectTypes,
-        loading
-    } = useMasterData(
+    const { buyers, styles, supervisors, defectTypes, loading } = useMasterData(
         baseUrl,
         formData.buyer_id
     );
@@ -103,24 +97,20 @@ export default function Kiosk({ type }: Type) {
         setIsRequestModalOpen(true);
     };
 
-
     /**
      * Sewing: Fetch Request Detail
      */
-    const {
-        selectedRequestId,
-        selectedRequest,
-        fetchRequestDetail,
-    } = useRequestDetail(baseUrl, line);
+    const { selectedRequestId, selectedRequest, fetchRequestDetail } =
+        useRequestDetail(baseUrl, line);
 
     /**
      * Sewing Get Defect Types
      */
     const defaultDefectData = Array.isArray(defectTypes)
         ? defectTypes.reduce((acc, item) => {
-            acc[item.key] = 0;
-            return acc;
-        }, {} as Record<string, number>)
+              acc[item.key] = 0;
+              return acc;
+          }, {} as Record<string, number>)
         : {};
 
     const defectData = {
@@ -149,6 +139,21 @@ export default function Kiosk({ type }: Type) {
         handlePackingScan,
     } = usePackingScan({ baseUrl, packing });
 
+    /**
+     * Helper
+     * @param dateStr
+     * @returns
+     */
+    const isToday = (dateStr: string) => {
+        const requestDate = new Date(dateStr);
+        const today = new Date();
+
+        return (
+            requestDate.getFullYear() === today.getFullYear() &&
+            requestDate.getMonth() === today.getMonth() &&
+            requestDate.getDate() === today.getDate()
+        );
+    };
 
     return (
         <div className="flex">
@@ -169,7 +174,7 @@ export default function Kiosk({ type }: Type) {
             )}
 
             {/* Sidebar */}
-            {type !== 'packing' && (
+            {type !== "packing" && (
                 <div
                     id="sidebar"
                     className={`fixed left-0 top-0 h-screen w-64 bg-white/95 backdrop-blur-sm border-r border-gray-200 p-4 z-40 transform transition-transform duration-300 ${
@@ -178,8 +183,15 @@ export default function Kiosk({ type }: Type) {
                 >
                     {/* Close Button (visible only on small screens) */}
                     <div className="mb-4 flex justify-end">
-                        <Button size="icon" variant="ghost" onClick={() => setIsSidebarOpen(false)}>
-                            <FontAwesomeIcon icon={faTimes} className="text-xl text-gray-500" />
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => setIsSidebarOpen(false)}
+                        >
+                            <FontAwesomeIcon
+                                icon={faTimes}
+                                className="text-xl text-gray-500"
+                            />
                         </Button>
                     </div>
 
@@ -204,15 +216,26 @@ export default function Kiosk({ type }: Type) {
             )}
 
             {/* Main Content */}
-            <div className={`p-6 space-y-6 transition-all w-full ${type !== 'packing' &&  isSidebarOpen ? "ml-64" : ""}`}>
+            <div
+                className={`p-6 space-y-6 transition-all w-full ${
+                    type !== "packing" && isSidebarOpen ? "ml-64" : ""
+                }`}
+            >
                 {/* Header */}
                 <Card className="p-4 bg-white/80 border border-gray-200">
                     <div className="grid grid-cols-2 items-center">
                         <div className="flex items-center space-x-4">
-                            <Button variant="outline" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                            >
                                 <FontAwesomeIcon icon={faBars} />
                             </Button>
-                            {type === 'packing' ? <FactoryPacking /> : <FactoryLine />}
+                            {type === "packing" ? (
+                                <FactoryPacking />
+                            ) : (
+                                <FactoryLine />
+                            )}
                         </div>
 
                         <div className="flex items-center justify-end space-x-4">
@@ -223,7 +246,7 @@ export default function Kiosk({ type }: Type) {
                 </Card>
 
                 {/* Info Bar */}
-                {type !== 'packing' && (
+                {type !== "packing" && (
                     <Card className="p-4 bg-white/80 border border-gray-200">
                         {selectedRequest && (
                             <div className="flex space-x-4">
@@ -233,14 +256,15 @@ export default function Kiosk({ type }: Type) {
                                     style={selectedRequest?.request_info?.style}
                                 />
 
-
                                 <div className="flex ml-auto pull-right">
                                     <StageSelector
                                         value={stage}
                                         onChange={updateStage}
                                     />
 
-                                    <div className="ml-auto">
+                                    {selectedRequest?.order_info?.date &&
+                                    isToday(selectedRequest.order_info.date) && (
+                                        <div className="ml-auto">
                                         <QrScanInput
                                             requestId={selectedRequestId ?? undefined}
                                             fetchRequestDetail={fetchRequestDetail}
@@ -248,7 +272,8 @@ export default function Kiosk({ type }: Type) {
                                             onStage={() => setStage("process")}
                                             defectTypes={defectTypes}
                                         />
-                                    </div>
+                                        </div>
+                                    )}
 
                                 </div>
                             </div>
@@ -259,22 +284,24 @@ export default function Kiosk({ type }: Type) {
                 {/* Order Information & Metrics */}
                 <div className="grid grid-cols-4 gap-4">
                     {/* Image Preview */}
-                    {type !== 'packing' && (
-                        <ImagePreviewCard data={selectedRequest?.image_preview} />
+                    {type !== "packing" && (
+                        <ImagePreviewCard
+                            data={selectedRequest?.image_preview}
+                        />
                     )}
 
                     {/* Order Information */}
-                    {type !== 'packing' && (
+                    {type !== "packing" && (
                         <OrderInfoCard data={selectedRequest?.order_info} />
                     )}
 
                     {/* Man Power */}
-                    {type !== 'packing' && (
+                    {type !== "packing" && (
                         <ManPowerCard data={selectedRequest?.man_power} />
                     )}
 
                     {/* Defect Type */}
-                    {type !== 'packing' && (
+                    {type !== "packing" && (
                         <DefectTypeCard
                             data={{
                                 ...defectData,
@@ -286,27 +313,29 @@ export default function Kiosk({ type }: Type) {
                     )}
 
                     {/* Image Preview */}
-                    {type === 'packing' && (
+                    {type === "packing" && (
                         <ImagePreviewCard data={imagePreview} />
                     )}
 
                     {/* Information */}
-                    {type === 'packing' && (
+                    {type === "packing" && (
                         <InformationCard data={qrPackingData} />
                     )}
 
                     {/* Qr Code */}
-                    {type === 'packing' && (
+                    {type === "packing" && (
                         <QRScanCard count={count} onScan={handlePackingScan} />
                     )}
                 </div>
 
                 {/* Production Data Table */}
-                {type !== 'packing' && (
-                    <ProductionDataCard data={selectedRequest?.production_data} />
+                {type !== "packing" && (
+                    <ProductionDataCard
+                        data={selectedRequest?.production_data}
+                    />
                 )}
 
-                {type === 'packing' && (
+                {type === "packing" && (
                     <ProductionDataCard data={productionData} />
                 )}
             </div>
