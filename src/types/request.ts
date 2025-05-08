@@ -4,6 +4,7 @@ export type Request = {
     status: string;
     buyer: string;
     style: string;
+    date: string;
 };
 
 export type RequestFormData = {
@@ -23,4 +24,3 @@ export type ProductionData = {
     actual: number[];
     cumulative: number[];
 };
-

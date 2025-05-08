@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 type OrderInfo = {
+    date: string;
     target: number;
     inspect: number;
     pass: number;
@@ -21,6 +22,12 @@ export default function OrderInfoCard({ data }: Props) {
             <CardContent>
                 <h3 className="text-2xl font-bold mb-6">Order Information</h3>
                 <div className="bg-white/80 p-6 rounded-xl backdrop-blur-sm border border-gray-200">
+                    <div>
+                        <p className="text-gray-500">Date</p>
+                        <p className="text-xl font-bold">{data?.date || 0}</p>
+                    </div>
+                    <hr className="my-4 border-t border-gray-300" />
+
                     <div className="grid grid-cols-2 gap-4 mt-4">
                         <div>
                             <p className="text-gray-500">Target</p>
