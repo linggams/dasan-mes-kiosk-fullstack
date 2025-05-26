@@ -10,7 +10,7 @@ export default function ImagePreviewCard({ data }: Props) {
         <Card className="bg-white rounded-xl shadow-xl border-none">
             <CardContent>
                 <Image
-                    src={data || "/placeholder.jpg"}
+                    src={data || "/placeholder.svg"}
                     className="w-full h-auto"
                     alt="Image preview"
                     width={500}

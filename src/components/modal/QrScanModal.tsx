@@ -3,7 +3,7 @@
 import { QRData } from "@/types/qr";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimes} from "@fortawesome/free-solid-svg-icons";
-import React from "react";
+import React, { useEffect } from "react";
 
 type Props = {
     open: boolean;
@@ -14,6 +14,25 @@ type Props = {
 };
 
 export default function QrScanModal({ open, onClose, qrData, onPass, onFail }: Props) {
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                onPass();
+            } else if (e.key === "Escape") {
+                onClose();
+            }
+        };
+
+        if (open) {
+            document.addEventListener("keydown", handleKeyDown);
+        }
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [open, onPass, onClose]);
+
     if (!open) return null;
 
     return (

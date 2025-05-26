@@ -263,18 +263,28 @@ export default function Kiosk({ type }: Type) {
                                     />
 
                                     {selectedRequest?.order_info?.date &&
-                                    isToday(selectedRequest.order_info.date) && (
-                                        <div className="ml-auto">
-                                        <QrScanInput
-                                            requestId={selectedRequestId ?? undefined}
-                                            fetchRequestDetail={fetchRequestDetail}
-                                            onQrCodeChange={(data) => setSelectedQrCode(data)}
-                                            onStage={() => setStage("process")}
-                                            defectTypes={defectTypes}
-                                        />
-                                        </div>
-                                    )}
-
+                                        isToday(
+                                            selectedRequest.order_info.date
+                                        ) && (
+                                            <div className="ml-auto">
+                                                <QrScanInput
+                                                    requestId={
+                                                        selectedRequestId ??
+                                                        undefined
+                                                    }
+                                                    fetchRequestDetail={
+                                                        fetchRequestDetail
+                                                    }
+                                                    onQrCodeChange={(data) =>
+                                                        setSelectedQrCode(data)
+                                                    }
+                                                    onStage={() =>
+                                                        setStage("process")
+                                                    }
+                                                    defectTypes={defectTypes}
+                                                />
+                                            </div>
+                                        )}
                                 </div>
                             </div>
                         )}
