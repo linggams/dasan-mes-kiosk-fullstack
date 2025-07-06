@@ -3,6 +3,8 @@ import { Progress } from "@/components/ui/progress";
 
 type OrderInfo = {
     date: string;
+    loading: number;
+    working: number;
     target: number;
     inspect: number;
     pass: number;
@@ -29,6 +31,14 @@ export default function OrderInfoCard({ data }: Props) {
                     <hr className="my-4 border-t border-gray-300" />
 
                     <div className="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <p className="text-gray-500">Loading</p>
+                            <p className="text-xl font-bold">{data?.loading || 0}</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-500">Working</p>
+                            <p className="text-xl font-bold">{data?.working || 0}</p>
+                        </div>
                         <div>
                             <p className="text-gray-500">Target</p>
                             <p className="text-xl font-bold">{data?.target || 0}</p>

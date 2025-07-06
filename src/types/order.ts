@@ -1,5 +1,7 @@
 export type OrderInfo = {
     date: string;
+    loading: number;
+    working: number;
     target: number;
     inspect: number;
     pass: number;
