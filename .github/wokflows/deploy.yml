@@ -1,0 +1,42 @@
+name: Deploy to Staging
+
+on:
+    push:
+        branches:
+            - stage
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Build Next.js project
+              run: pnpm run build
+
+            - name: Copy project to server
+              uses: appleboy/scp-action@master
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SERVER_SSH_KEY }}
+                  port: 22
+                  source: "."
+                  target: "/var/www/html/dppi/dppikiosk"
+
+            - name: SSH to server and run build script
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SERVER_SSH_KEY }}
+                  port: 22
+                  script: |
+                      cd /var/www/html/dppi/dppikiosk
+                      chmod +x build.sh
+                      ./build.sh
