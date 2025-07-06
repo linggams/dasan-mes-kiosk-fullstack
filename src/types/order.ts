@@ -15,4 +15,7 @@ export type ManPower = {
     helper: number;
     iron: number;
     qc: number;
+    qc_finishing: number;
+    hangtag: number;
+    folding: number;
 };

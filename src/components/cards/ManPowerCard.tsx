@@ -38,6 +38,18 @@ export default function ManPowerCard({ data }: Props) {
                             <span className="text-gray-700 font-medium">QC</span>
                             <span className="text-2xl font-bold text-orange-500">{data?.qc || 0}</span>
                         </div>
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                            <span className="text-gray-700 font-medium">QC Finishing</span>
+                            <span className="text-2xl font-bold text-orange-500">{data?.qc_finishing || 0}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                            <span className="text-gray-700 font-medium">Hangtag</span>
+                            <span className="text-2xl font-bold text-orange-500">{data?.hangtag || 0}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                            <span className="text-gray-700 font-medium">Folding</span>
+                            <span className="text-2xl font-bold text-orange-500">{data?.folding || 0}</span>
+                        </div>
                     </div>
                 </div>
             </CardContent>
