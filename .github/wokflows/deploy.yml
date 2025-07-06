@@ -38,5 +38,11 @@ jobs:
                   port: 22
                   script: |
                       cd /var/www/html/dppi/dppikiosk
+
+                      echo "=== Pulling latest code ==="
+                      git reset --hard HEAD
+                      git pull origin stage --no-ff
+
+                      echo "=== Running build script ==="
                       chmod +x build.sh
                       ./build.sh
