@@ -26,7 +26,7 @@ export default function ProductionData({ data, onDateChange }: Props) {
     return (
         <Card className="bg-white rounded-xl shadow-xl border-none">
             <CardContent>
-                <div className="flex items-center justify-between mb-4">
+                {/* <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold text-gray-800">
                         Production Data
                     </h2>
@@ -36,7 +36,7 @@ export default function ProductionData({ data, onDateChange }: Props) {
                         value={selectedDate}
                         onChange={handleDateChange}
                     />
-                </div>
+                </div> */}
                 <div className="bg-white/80 p-3 rounded-xl backdrop-blur-sm border border-gray-200 overflow-x-auto">
                     <table className="min-w-full">
                         <thead>
