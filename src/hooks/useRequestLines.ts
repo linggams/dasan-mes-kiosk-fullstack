@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LineInfoTypes, ProductionData } from "@/types/request";
 import { OrderInfo } from "@/types/order";
@@ -18,7 +18,7 @@ export const useRequestLines = (baseUrl: string) => {
     Array<RequestLinesTypes> | []
   >([]);
 
-  const fetchRequestLines = async () => {
+  const fetchRequestLines = useCallback(async () => {
     setIsLoading(true);
 
     try {
@@ -39,11 +39,11 @@ export const useRequestLines = (baseUrl: string) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [baseUrl]);
 
   useEffect(() => {
     fetchRequestLines();
-  }, [baseUrl]);
+  }, [fetchRequestLines]);
 
   return {
     selectedRequestLines,
