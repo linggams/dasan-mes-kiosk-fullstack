@@ -7,21 +7,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import LineDataCard from "@/components/cards/LineDataCard";
 import { useRequestLines } from "@/hooks/useRequestLines";
+import { FactoryTypes } from "@/types/request";
+import { RefreshCw } from "lucide-react";
 
 export default function LinePage() {
   const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
-
-  const { isLoading, selectedRequestLines } = useRequestLines(baseUrl);
-
+  const [allFactories, setAllFactories] = useState<FactoryTypes[]>([]);
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split("T")[0]; // format YYYY-MM-DD
   });
+  const [selectedFactory, setSelectedFactory] = useState<string>("");
+
+  const { isLoading, selectedRequestLines } = useRequestLines(baseUrl);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${baseUrl}/kiosk/master/factories`);
+        const result = await res.json();
+
+        if (result.status === "error") {
+          setAllFactories([]);
+          return;
+        }
+
+        const data = result.data;
+
+        setAllFactories(data);
+      } catch (error: unknown) {
+        console.log(error);
+      }
+    })();
+  }, [baseUrl]);
+
+  const filteredRequestLines = useMemo(() => {
+    if (!selectedFactory || selectedFactory === "default") {
+      return selectedRequestLines;
+    }
+
+    return selectedRequestLines.filter(
+      (line) => line.line_info.factory === selectedFactory
+    );
+  }, [selectedFactory, selectedRequestLines]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
@@ -31,14 +62,19 @@ export default function LinePage() {
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="flex items-center justify-between w-full p-4 bg-white shadow">
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Theme" />
+        <Select defaultValue="default" onValueChange={setSelectedFactory}>
+          <SelectTrigger className="min-w-44">
+            <SelectValue placeholder="Select Factory" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="light">Light</SelectItem>
-            <SelectItem value="dark">Dark</SelectItem>
-            <SelectItem value="system">System</SelectItem>
+          <SelectContent className="bg-gray-50">
+            <SelectItem value="default" disabled>
+              Select Factory
+            </SelectItem>
+            {allFactories.map((factory) => (
+              <SelectItem key={factory.id} value={factory.name}>
+                {factory.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <div className="flex gap-2">
@@ -49,11 +85,8 @@ export default function LinePage() {
             onChange={handleDateChange}
           />
 
-          <Button
-            variant="outline"
-            // onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <FontAwesomeIcon icon={faTimes} className="text-gray-500" />
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            <RefreshCw />
             Refresh
           </Button>
         </div>
@@ -65,8 +98,8 @@ export default function LinePage() {
             <div className="flex items-center justify-center h-64">
               <p className="text-gray-500">Loading...</p>
             </div>
-          ) : selectedRequestLines.length > 0 ? (
-            selectedRequestLines.map((lines, idx: number) => (
+          ) : filteredRequestLines.length > 0 ? (
+            filteredRequestLines.map((lines, idx: number) => (
               <LineDataCard key={lines.line_info.line + idx} data={lines} />
             ))
           ) : (
