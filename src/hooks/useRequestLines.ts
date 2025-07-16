@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LineInfoTypes, ProductionData } from "@/types/request";
 import { OrderInfo } from "@/types/order";
+import { format } from "date-fns";
 
 export type RequestLinesTypes = {
   line_info: LineInfoTypes;
@@ -12,17 +13,36 @@ export type RequestLinesTypes = {
   production_data: ProductionData;
 };
 
-export const useRequestLines = (baseUrl: string) => {
+export const useRequestLines = (
+  baseUrl: string,
+  selectedFactory: string,
+  currentDate: Date | undefined
+) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedRequestLines, setSelectedRequestLines] = useState<
     Array<RequestLinesTypes> | []
   >([]);
 
   const fetchRequestLines = useCallback(async () => {
+    const parseSelectedFactory = selectedFactory
+      ? JSON.parse(selectedFactory)
+      : null;
+    const factoryQuery = parseSelectedFactory
+      ? `?factory=${parseSelectedFactory.id}`
+      : "";
+    const requestDate =
+      currentDate && factoryQuery
+        ? `&request_date=${format(currentDate, "yyyy-MM-dd")}`
+        : currentDate
+        ? `?request_date=${format(currentDate, "yyyy-MM-dd")}`
+        : "";
+
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${baseUrl}/kiosk/lines`);
+      const res = await fetch(
+        `${baseUrl}/kiosk/lines${factoryQuery}${requestDate}`
+      );
       const result = await res.json();
 
       if (result.status === "error") {
@@ -39,7 +59,7 @@ export const useRequestLines = (baseUrl: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, [baseUrl]);
+  }, [baseUrl, selectedFactory, currentDate]);
 
   useEffect(() => {
     fetchRequestLines();
