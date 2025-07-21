@@ -24,7 +24,7 @@ export default function ProductionData({ data }: Props) {
     // };
 
     return (
-        <Card className="bg-white rounded-xl shadow-xl border-none">
+        <Card className="bg-white rounded-xl border-gray-200">
             <CardContent>
                 {/* <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold text-gray-800">
@@ -37,7 +37,7 @@ export default function ProductionData({ data }: Props) {
                         onChange={handleDateChange}
                     />
                 </div> */}
-                <div className="bg-white/80 p-3 rounded-xl backdrop-blur-sm border border-gray-200 overflow-x-auto">
+                {/* <div className="bg-white/80 p-3 rounded-xl backdrop-blur-sm border border-gray-200 overflow-x-auto"> */}
                     <table className="min-w-full">
                         <thead>
                             <tr className="text-xs text-gray-700 bg-gray-50">
@@ -81,7 +81,7 @@ export default function ProductionData({ data }: Props) {
                             </tr>
                         </tbody>
                     </table>
-                </div>
+                {/* </div> */}
             </CardContent>
         </Card>
     );

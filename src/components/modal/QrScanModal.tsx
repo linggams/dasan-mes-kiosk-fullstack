@@ -46,7 +46,7 @@ export default function QrScanModal({ open, onClose, qrData, onPass, onFail }: P
                         <FontAwesomeIcon icon={faTimes} className="text-xl text-gray-500" />
                     </button>
                     <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                        QR Scan Details
+                        Step 1
                     </h3>
                     <div className="space-y-3">
                         {qrData && (

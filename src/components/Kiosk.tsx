@@ -15,6 +15,7 @@ import ImagePreviewCard from "@/components/cards/ImagePreviewCard";
 import OrderInfoCard from "@/components/cards/OrderInfoCard";
 import ManPowerCard from "@/components/cards/ManPowerCard";
 import DefectTypeCard from "@/components/cards/DefectTypeCard";
+import DefectProcessCard from "@/components/cards/DefectProcessCard";
 import ProductionDataCard from "@/components/cards/ProductionDataCard";
 import RequestModal from "@/components/modal/RequestModal";
 import FactoryPacking from "@/components/FactoryPacking";
@@ -87,10 +88,8 @@ export default function Kiosk({ type }: Type) {
         defaultFormData,
     });
 
-    const { buyers, styles, supervisors, defectTypes, loading } = useMasterData(
-        baseUrl,
-        formData.buyer_id
-    );
+    const { buyers, styles, supervisors, defectTypes, processes, loading } =
+        useMasterData(baseUrl, formData.buyer_id);
 
     const handleOpenRequestModal = () => {
         setFormData(defaultFormData);
@@ -154,6 +153,11 @@ export default function Kiosk({ type }: Type) {
             requestDate.getDate() === today.getDate()
         );
     };
+
+    const processOptions = processes.map((p) => ({
+        label: p.name,
+        value: typeof p.id === "string" ? parseInt(p.id, 10) : p.id,
+    }));
 
     return (
         <div className="flex">
@@ -282,6 +286,7 @@ export default function Kiosk({ type }: Type) {
                                                         setStage("process")
                                                     }
                                                     defectTypes={defectTypes}
+                                                    processes={processes}
                                                 />
                                             </div>
                                         )}
@@ -292,7 +297,7 @@ export default function Kiosk({ type }: Type) {
                 )}
 
                 {/* Order Information & Metrics */}
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-5 gap-4">
                     {/* Image Preview */}
                     {type !== "packing" && (
                         <ImagePreviewCard
@@ -318,6 +323,20 @@ export default function Kiosk({ type }: Type) {
                                 ...(selectedRequest?.defect_summary || {}),
                             }}
                             types={defectTypes}
+                            loading={loading}
+                        />
+                    )}
+
+                    {/* Defect Type */}
+                    {type !== "packing" && (
+                        <DefectProcessCard
+                            data={{
+                                ...(selectedRequest?.process_summary || {}),
+                            }}
+                            processes={processOptions.map((p) => ({
+                                id: p.value,
+                                name: p.label,
+                            }))}
                             loading={loading}
                         />
                     )}

@@ -7,7 +7,7 @@ type Props = {
 
 export default function ImagePreviewCard({ data }: Props) {
     return (
-        <Card className="bg-white rounded-xl shadow-xl border-none">
+        <Card className="bg-white rounded-xl border-gray-200">
             <CardContent>
                 <Image
                     src={data || "/placeholder.svg"}
