@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import {ProductionData, RequestData} from "@/types/request";
-import {ManPower, OrderInfo} from "@/types/order";
+import { ProductionData, RequestData } from "@/types/request";
+import { ManPower, OrderInfo } from "@/types/order";
 
 export type RequestDetail = {
     request_info: RequestData;
@@ -9,18 +9,24 @@ export type RequestDetail = {
     order_info: OrderInfo;
     man_power: ManPower;
     defect_summary: Record<string, number>;
+    process_summary: Record<string, number>;
     production_data: ProductionData;
 };
 
 export const useRequestDetail = (baseUrl: string, line: string) => {
-    const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
-    const [selectedRequest, setSelectedRequest] = useState<RequestDetail | null>(null);
+    const [selectedRequestId, setSelectedRequestId] = useState<number | null>(
+        null
+    );
+    const [selectedRequest, setSelectedRequest] =
+        useState<RequestDetail | null>(null);
 
     const fetchRequestDetail = async (reqId: number) => {
         setSelectedRequestId(reqId);
 
         try {
-            const res = await fetch(`${baseUrl}/kiosk/sewing/${reqId}?line=${line}`);
+            const res = await fetch(
+                `${baseUrl}/kiosk/sewing/${reqId}?line=${line}`
+            );
             const result = await res.json();
 
             if (result.status === "error") {
@@ -31,6 +37,7 @@ export const useRequestDetail = (baseUrl: string, line: string) => {
 
             const detail = result.data;
             detail.defect_summary ??= {};
+            detail.process_summary ??= {};
             setSelectedRequest(detail);
         } catch (error: unknown) {
             const err = error as Error;

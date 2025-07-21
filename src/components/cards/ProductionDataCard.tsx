@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 
 type Props = {
@@ -9,24 +9,24 @@ type Props = {
     onDateChange?: (date: string) => void;
 };
 
-export default function ProductionData({ data, onDateChange }: Props) {
-    const [selectedDate, setSelectedDate] = useState(() => {
-        const today = new Date();
-        return today.toISOString().split("T")[0]; // format YYYY-MM-DD
-    });
+export default function ProductionData({ data }: Props) {
+    // const [selectedDate, setSelectedDate] = useState(() => {
+    //     const today = new Date();
+    //     return today.toISOString().split("T")[0]; // format YYYY-MM-DD
+    // });
 
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newDate = e.target.value;
-        setSelectedDate(newDate);
-        if (onDateChange) {
-            onDateChange(newDate);
-        }
-    };
+    // const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const newDate = e.target.value;
+    //     setSelectedDate(newDate);
+    //     if (onDateChange) {
+    //         onDateChange(newDate);
+    //     }
+    // };
 
     return (
-        <Card className="bg-white rounded-xl shadow-xl border-none">
+        <Card className="bg-white rounded-xl border-gray-200">
             <CardContent>
-                <div className="flex items-center justify-between mb-4">
+                {/* <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold text-gray-800">
                         Production Data
                     </h2>
@@ -36,8 +36,8 @@ export default function ProductionData({ data, onDateChange }: Props) {
                         value={selectedDate}
                         onChange={handleDateChange}
                     />
-                </div>
-                <div className="bg-white/80 p-3 rounded-xl backdrop-blur-sm border border-gray-200 overflow-x-auto">
+                </div> */}
+                {/* <div className="bg-white/80 p-3 rounded-xl backdrop-blur-sm border border-gray-200 overflow-x-auto"> */}
                     <table className="min-w-full">
                         <thead>
                             <tr className="text-xs text-gray-700 bg-gray-50">
@@ -81,7 +81,7 @@ export default function ProductionData({ data, onDateChange }: Props) {
                             </tr>
                         </tbody>
                     </table>
-                </div>
+                {/* </div> */}
             </CardContent>
         </Card>
     );

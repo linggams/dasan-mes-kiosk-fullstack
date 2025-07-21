@@ -25,6 +25,11 @@ export type ProductionData = {
   cumulative: number[];
 };
 
+export type FactoryTypes = {
+  id: number;
+  name: string;
+};
+
 export type LineInfoTypes = {
   factory: string;
   line: string;
