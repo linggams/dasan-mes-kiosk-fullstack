@@ -10,11 +10,11 @@ type Props = {
     open: boolean;
     onClose: () => void;
     onBack: () => void;
-    onNext: () => void;
+    onNext: (isRework: boolean) => void;
     selectedDefects: MasterDefectType[];
     processOptions: { label: string; value: number }[];
     selectedProcesses: Record<string, number[]>;
-    onProcessSelect: (defectKey: string, processId: number) => void;
+    onProcessSelect: (defectKey: string, processIds: number[]) => void;
 };
 
 export default function ProcessModal({
