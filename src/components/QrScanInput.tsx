@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { QRData } from "@/types/qr";
 import DefectTypeModal from "@/components/modal/DefectTypeModal";
 import ProcessModal from "@/components/modal/ProcessModal";
-import ActionModal from "@/components/modal/ActionModal";
+// import ActionModal from "@/components/modal/ActionModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { MasterDefectType, MasterProcess } from "@/hooks/useMasterData";
