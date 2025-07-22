@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { ProductionData, RequestData } from "@/types/request";
+import { ProductionData, RequestData, ProcessLayout } from "@/types/request";
 import { ManPower, OrderInfo } from "@/types/order";
 
 export type RequestDetail = {
@@ -11,6 +11,7 @@ export type RequestDetail = {
     defect_summary: Record<string, number>;
     process_summary: Record<string, number>;
     production_data: ProductionData;
+    process_layout: ProcessLayout;
 };
 
 export const useRequestDetail = (baseUrl: string, line: string) => {

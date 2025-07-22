@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+<<<<<<< Updated upstream
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
+=======
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import Header from "@/components/layouts/header";
+import Sidebar from "@/components/layouts/sidebar";
+>>>>>>> Stashed changes
 
-import FactoryLine from "@/components/FactoryLine";
 import RequestInfo from "@/components/RequestInfo";
-import RequestListPanel from "@/components/RequestListPanel";
 import StageSelector from "@/components/StageSelector";
 import QrScanInput from "@/components/QrScanInput";
 import ImagePreviewCard from "@/components/cards/ImagePreviewCard";
@@ -18,9 +21,9 @@ import DefectTypeCard from "@/components/cards/DefectTypeCard";
 import DefectProcessCard from "@/components/cards/DefectProcessCard";
 import ProductionDataCard from "@/components/cards/ProductionDataCard";
 import RequestModal from "@/components/modal/RequestModal";
-import FactoryPacking from "@/components/FactoryPacking";
 import QRScanCard from "@/components/cards/QrScanCard";
 import InformationCard from "@/components/cards/InformationCard";
+import ProcessLayoutCard from "@/components/cards/ProcessLayoutCard";
 
 import { usePackingScan } from "@/hooks/usePackingScan";
 import { useUpdateStage } from "@/hooks/useUpdateStage";
@@ -250,49 +253,47 @@ export default function Kiosk({ type }: Type) {
                 </Card>
 
                 {/* Info Bar */}
-                {type !== "packing" && (
+                {type !== "packing" && selectedRequest && (
                     <Card className="p-4 bg-white/80 border border-gray-200">
-                        {selectedRequest && (
-                            <div className="flex space-x-4">
-                                <RequestInfo
-                                    code={selectedRequest?.request_info?.code}
-                                    buyer={selectedRequest?.request_info?.buyer}
-                                    style={selectedRequest?.request_info?.style}
+                        <div className="flex space-x-4">
+                            <RequestInfo
+                                code={selectedRequest?.request_info?.code}
+                                buyer={selectedRequest?.request_info?.buyer}
+                                style={selectedRequest?.request_info?.style}
+                            />
+
+                            <div className="flex ml-auto pull-right">
+                                <StageSelector
+                                    value={stage}
+                                    onChange={updateStage}
                                 />
 
-                                <div className="flex ml-auto pull-right">
-                                    <StageSelector
-                                        value={stage}
-                                        onChange={updateStage}
-                                    />
-
-                                    {selectedRequest?.order_info?.date &&
-                                        isToday(
-                                            selectedRequest.order_info.date
-                                        ) && (
-                                            <div className="ml-auto">
-                                                <QrScanInput
-                                                    requestId={
-                                                        selectedRequestId ??
-                                                        undefined
-                                                    }
-                                                    fetchRequestDetail={
-                                                        fetchRequestDetail
-                                                    }
-                                                    onQrCodeChange={(data) =>
-                                                        setSelectedQrCode(data)
-                                                    }
-                                                    onStage={() =>
-                                                        setStage("process")
-                                                    }
-                                                    defectTypes={defectTypes}
-                                                    processes={processes}
-                                                />
-                                            </div>
-                                        )}
-                                </div>
+                                {selectedRequest?.order_info?.date &&
+                                    isToday(
+                                        selectedRequest.order_info.date
+                                    ) && (
+                                        <div className="ml-auto">
+                                            <QrScanInput
+                                                requestId={
+                                                    selectedRequestId ??
+                                                    undefined
+                                                }
+                                                fetchRequestDetail={
+                                                    fetchRequestDetail
+                                                }
+                                                onQrCodeChange={(data) =>
+                                                    setSelectedQrCode(data)
+                                                }
+                                                onStage={() =>
+                                                    setStage("process")
+                                                }
+                                                defectTypes={defectTypes}
+                                                processes={processes}
+                                            />
+                                        </div>
+                                    )}
                             </div>
-                        )}
+                        </div>
                     </Card>
                 )}
 
@@ -364,9 +365,32 @@ export default function Kiosk({ type }: Type) {
                     />
                 )}
 
+<<<<<<< Updated upstream
                 {type === "packing" && (
                     <ProductionDataCard data={productionData} />
                 )}
+=======
+                        {/* Production Data Table */}
+                        {type !== "packing" && (
+                            <ProductionDataCard
+                                data={selectedRequest?.production_data}
+                            />
+                        )}
+
+                        {type === "packing" && (
+                            <ProductionDataCard data={productionData} />
+                        )}
+                    </TabsContent>
+
+                    {/* Layouts Tab */}
+                    <TabsContent value="layouts">
+                        {/* Process Layout Table */}
+                        <ProcessLayoutCard
+                            data={selectedRequest?.process_layout}
+                        />
+                    </TabsContent>
+                </Tabs>
+>>>>>>> Stashed changes
             </div>
 
             {/* Request Modal */}
