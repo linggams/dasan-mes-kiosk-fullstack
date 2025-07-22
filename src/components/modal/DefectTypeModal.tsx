@@ -41,10 +41,10 @@ export default function DefectTypeModal({ open, onClose, onBack, onSelect, types
                         <FontAwesomeIcon icon={faTimes} className="text-xl text-gray-500" />
                     </button>
                     <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                        Select Defect Type
+                        Step 2
                     </h3>
 
-                    <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
+                    <div className="space-y-3 max-h-120 overflow-y-auto pr-2">
                         {types.map((item) => (
                                 <label
                                     key={item.key}

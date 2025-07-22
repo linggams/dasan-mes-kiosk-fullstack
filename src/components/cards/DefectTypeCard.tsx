@@ -8,7 +8,7 @@ type Props = {
 
 export default function DefectTypeCard({ data, types, loading }: Props) {
     return (
-        <Card className="bg-white rounded-xl shadow-xl border-none">
+        <Card className="bg-white rounded-xl border-gray-200">
             <CardContent>
                 {loading ? (
                     <div className="space-y-4 animate-pulse">
@@ -38,8 +38,8 @@ export default function DefectTypeCard({ data, types, loading }: Props) {
               </span>
                         </div>
 
-                        <div className="bg-white/80 p-6 rounded-xl backdrop-blur-sm border border-gray-200 max-h-[32rem] overflow-y-auto">
-                            <div className="space-y-2">
+                        {/* <div className="bg-white/80 p-6 rounded-xl backdrop-blur-sm border border-gray-200 max-h-[32rem] overflow-y-auto"> */}
+                            <div className="space-y-2 mt-6">
                                 {Array.isArray(types) &&
                                     types
                                         .filter((type) => type.key !== "total_defect")
@@ -58,7 +58,7 @@ export default function DefectTypeCard({ data, types, loading }: Props) {
                                             </div>
                                         ))}
                             </div>
-                        </div>
+                        {/* </div> */}
                     </>
                 )}
             </CardContent>
