@@ -15,9 +15,9 @@ export default function Sidebar({
     isOpen: boolean;
     onClose: () => void;
     handleOpenRequestModal: () => void;
-    fetchRequestDetail: () => void;
-    selectedRequestId?: string;
-    refetchSignal: number;
+    fetchRequestDetail: (id: number) => void | Promise<void>;
+    selectedRequestId?: number;
+    refetchSignal?: boolean;
 }) {
     return (
         <aside
@@ -50,7 +50,7 @@ export default function Sidebar({
                 <RequestListPanel
                     fetchRequestDetail={fetchRequestDetail}
                     requestId={selectedRequestId}
-                    refetchSignal={refetchSignal}
+                    refetchSignal={!!refetchSignal}
                 />
             </div>
         </aside>

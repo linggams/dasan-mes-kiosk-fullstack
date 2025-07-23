@@ -166,7 +166,7 @@ export default function Kiosk({ type }: Type) {
                     handleOpenRequestModal={handleOpenRequestModal}
                     fetchRequestDetail={fetchRequestDetail}
                     selectedRequestId={selectedRequestId ?? undefined}
-                    refetchSignal={refetchSignal}
+                    refetchSignal={refetchSignal ?? undefined}
                 />
             )}
 
@@ -334,7 +334,7 @@ export default function Kiosk({ type }: Type) {
                     <TabsContent value="layouts">
                         {/* Process Layout Table */}
                         <ProcessLayoutCard
-                            data={selectedRequest?.process_layout}
+                            data={selectedRequest?.process_layout ?? []}
                         />
                     </TabsContent>
                 </Tabs>

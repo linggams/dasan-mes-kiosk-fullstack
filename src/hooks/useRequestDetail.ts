@@ -11,7 +11,7 @@ export type RequestDetail = {
     defect_summary: Record<string, number>;
     process_summary: Record<string, number>;
     production_data: ProductionData;
-    process_layout: ProcessLayout;
+    process_layout?: ProcessLayout[];
 };
 
 export const useRequestDetail = (baseUrl: string, line: string) => {
