@@ -182,6 +182,7 @@ export default function Kiosk({ type }: Type) {
 
             {/* Sidebar */}
             {type !== "packing" && (
+<<<<<<< Updated upstream
                 <div
                     id="sidebar"
                     className={`fixed left-0 top-0 h-screen w-64 bg-white/95 backdrop-blur-sm border-r border-gray-200 p-4 z-40 transform transition-transform duration-300 ${
@@ -220,6 +221,16 @@ export default function Kiosk({ type }: Type) {
                         />
                     </div>
                 </div>
+=======
+                <Sidebar
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                    handleOpenRequestModal={handleOpenRequestModal}
+                    fetchRequestDetail={fetchRequestDetail}
+                    selectedRequestId={selectedRequestId ?? undefined}
+                    refetchSignal={refetchSignal ?? undefined}
+                />
+>>>>>>> Stashed changes
             )}
 
             {/* Main Content */}
@@ -386,7 +397,7 @@ export default function Kiosk({ type }: Type) {
                     <TabsContent value="layouts">
                         {/* Process Layout Table */}
                         <ProcessLayoutCard
-                            data={selectedRequest?.process_layout}
+                            data={selectedRequest?.process_layout ?? []}
                         />
                     </TabsContent>
                 </Tabs>

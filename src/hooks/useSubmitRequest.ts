@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import {RequestFormData} from "@/types/request";
+import { RequestFormData } from "@/types/request";
 
 type UseSubmitRequestProps<T> = {
     baseUrl: string;
@@ -9,10 +9,10 @@ type UseSubmitRequestProps<T> = {
 };
 
 export const useSubmitRequest = <T extends Record<string, unknown>>({
-                                                                    baseUrl,
-                                                                    line,
-                                                                    defaultFormData,
-                                                                }: UseSubmitRequestProps<T>) => {
+    baseUrl,
+    line,
+    defaultFormData,
+}: UseSubmitRequestProps<T>) => {
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
     const [refetchSignal, setRefetchSignal] = useState(false);
     const [formData, setFormData] = useState<RequestFormData>({
