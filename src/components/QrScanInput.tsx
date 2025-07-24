@@ -217,7 +217,9 @@ export default function QrScanInput({
     }, []);
 
     useEffect(() => {
-        if (!isQrModalOpen && !isDefectTypeModalOpen && !isActionModalOpen) {
+        if (isQrModalOpen || isDefectTypeModalOpen || isActionModalOpen) {
+            inputRef.current?.blur();
+        } else {
             inputRef.current?.focus();
         }
     }, [isQrModalOpen, isDefectTypeModalOpen, isActionModalOpen]);

@@ -11,7 +11,7 @@ export default function StageSelector({ value, onChange }: Props) {
     const stages = ["finishing", "washing"];
 
     return (
-        <div className="flex space-x-2 mr-5">
+        <div className="flex space-x-2 mr-5 hidden">
             {stages.map((stage) => (
                 <label key={stage}>
                     <input
