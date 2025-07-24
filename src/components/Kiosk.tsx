@@ -2,15 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-<<<<<<< Updated upstream
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
-=======
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Header from "@/components/layouts/header";
 import Sidebar from "@/components/layouts/sidebar";
->>>>>>> Stashed changes
-
 import RequestInfo from "@/components/RequestInfo";
 import StageSelector from "@/components/StageSelector";
 import QrScanInput from "@/components/QrScanInput";
@@ -164,64 +158,8 @@ export default function Kiosk({ type }: Type) {
 
     return (
         <div className="flex">
-            {/* Toggle Button for Mobile */}
-            <button
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="md:hidden fixed top-4 left-4 z-50 bg-blue-600 text-white px-3 py-2 rounded-md shadow-md"
-            >
-                Menu
-            </button>
-
-            {/* Overlay for Mobile Sidebar */}
-            {isSidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-black/30 z-30 md:hidden"
-                    onClick={() => setIsSidebarOpen(false)}
-                />
-            )}
-
             {/* Sidebar */}
             {type !== "packing" && (
-<<<<<<< Updated upstream
-                <div
-                    id="sidebar"
-                    className={`fixed left-0 top-0 h-screen w-64 bg-white/95 backdrop-blur-sm border-r border-gray-200 p-4 z-40 transform transition-transform duration-300 ${
-                        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-                    }`}
-                >
-                    {/* Close Button (visible only on small screens) */}
-                    <div className="mb-4 flex justify-end">
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => setIsSidebarOpen(false)}
-                        >
-                            <FontAwesomeIcon
-                                icon={faTimes}
-                                className="text-xl text-gray-500"
-                            />
-                        </Button>
-                    </div>
-
-                    {/* Request Button */}
-                    <div className="mb-4">
-                        <Button
-                            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors"
-                            onClick={handleOpenRequestModal}
-                        >
-                            Request
-                        </Button>
-                    </div>
-
-                    <div className="overflow-y-auto h-[calc(100vh-120px)] pr-1">
-                        <RequestListPanel
-                            fetchRequestDetail={fetchRequestDetail}
-                            requestId={selectedRequestId ?? undefined}
-                            refetchSignal={refetchSignal}
-                        />
-                    </div>
-                </div>
-=======
                 <Sidebar
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)}
@@ -230,7 +168,6 @@ export default function Kiosk({ type }: Type) {
                     selectedRequestId={selectedRequestId ?? undefined}
                     refetchSignal={refetchSignal ?? undefined}
                 />
->>>>>>> Stashed changes
             )}
 
             {/* Main Content */}
@@ -240,28 +177,12 @@ export default function Kiosk({ type }: Type) {
                 }`}
             >
                 {/* Header */}
-                <Card className="p-4 bg-white/80 border border-gray-200">
-                    <div className="grid grid-cols-2 items-center">
-                        <div className="flex items-center space-x-4">
-                            <Button
-                                variant="outline"
-                                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                            >
-                                <FontAwesomeIcon icon={faBars} />
-                            </Button>
-                            {type === "packing" ? (
-                                <FactoryPacking />
-                            ) : (
-                                <FactoryLine />
-                            )}
-                        </div>
-
-                        <div className="flex items-center justify-end space-x-4">
-                            <span className="text-lg font-bold">{date}</span>
-                            <span className="text-lg font-bold">{time}</span>
-                        </div>
-                    </div>
-                </Card>
+                <Header
+                    type={type}
+                    date={date}
+                    time={time}
+                    toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                />
 
                 {/* Info Bar */}
                 {type !== "packing" && selectedRequest && (
@@ -308,79 +229,95 @@ export default function Kiosk({ type }: Type) {
                     </Card>
                 )}
 
-                {/* Order Information & Metrics */}
-                <div className="grid grid-cols-5 gap-4">
-                    {/* Image Preview */}
-                    {type !== "packing" && (
-                        <ImagePreviewCard
-                            data={selectedRequest?.image_preview}
-                        />
-                    )}
+                {/* Tabs */}
+                <Tabs defaultValue="general" className="w-full space-y-6">
+                    <TabsList className="w-full flex">
+                        <TabsTrigger
+                            value="general"
+                            className="flex-1 text-center data-[state=active]:bg-black data-[state=active]:text-white"
+                        >
+                            General
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="layouts"
+                            className="flex-1 text-center data-[state=active]:bg-black data-[state=active]:text-white"
+                        >
+                            Layout
+                        </TabsTrigger>
+                    </TabsList>
 
-                    {/* Order Information */}
-                    {type !== "packing" && (
-                        <OrderInfoCard data={selectedRequest?.order_info} />
-                    )}
+                    {/* General Tab */}
+                    <TabsContent value="general" className="space-y-6">
+                        {/* Order Information & Metrics */}
+                        <div className="grid grid-cols-5 gap-4">
+                            {/* Image Preview */}
+                            {type !== "packing" && (
+                                <ImagePreviewCard
+                                    data={selectedRequest?.image_preview}
+                                />
+                            )}
 
-                    {/* Man Power */}
-                    {type !== "packing" && (
-                        <ManPowerCard data={selectedRequest?.man_power} />
-                    )}
+                            {/* Order Information */}
+                            {type !== "packing" && (
+                                <OrderInfoCard
+                                    data={selectedRequest?.order_info}
+                                />
+                            )}
 
-                    {/* Defect Type */}
-                    {type !== "packing" && (
-                        <DefectTypeCard
-                            data={{
-                                ...defectData,
-                                ...(selectedRequest?.defect_summary || {}),
-                            }}
-                            types={defectTypes}
-                            loading={loading}
-                        />
-                    )}
+                            {/* Man Power */}
+                            {type !== "packing" && (
+                                <ManPowerCard
+                                    data={selectedRequest?.man_power}
+                                />
+                            )}
 
-                    {/* Defect Type */}
-                    {type !== "packing" && (
-                        <DefectProcessCard
-                            data={{
-                                ...(selectedRequest?.process_summary || {}),
-                            }}
-                            processes={processOptions.map((p) => ({
-                                id: p.value,
-                                name: p.label,
-                            }))}
-                            loading={loading}
-                        />
-                    )}
+                            {/* Defect Type */}
+                            {type !== "packing" && (
+                                <DefectTypeCard
+                                    data={{
+                                        ...defectData,
+                                        ...(selectedRequest?.defect_summary ||
+                                            {}),
+                                    }}
+                                    types={defectTypes}
+                                    loading={loading}
+                                />
+                            )}
 
-                    {/* Image Preview */}
-                    {type === "packing" && (
-                        <ImagePreviewCard data={imagePreview} />
-                    )}
+                            {/* Defect Type */}
+                            {type !== "packing" && (
+                                <DefectProcessCard
+                                    data={{
+                                        ...(selectedRequest?.process_summary ||
+                                            {}),
+                                    }}
+                                    processes={processOptions.map((p) => ({
+                                        id: p.value,
+                                        name: p.label,
+                                    }))}
+                                    loading={loading}
+                                />
+                            )}
 
-                    {/* Information */}
-                    {type === "packing" && (
-                        <InformationCard data={qrPackingData} />
-                    )}
+                            {/* Image Preview */}
+                            {type === "packing" && (
+                                <ImagePreviewCard data={imagePreview} />
+                            )}
 
-                    {/* Qr Code */}
-                    {type === "packing" && (
-                        <QRScanCard count={count} onScan={handlePackingScan} />
-                    )}
-                </div>
+                            {/* Information */}
+                            {type === "packing" && (
+                                <InformationCard data={qrPackingData} />
+                            )}
 
-                {/* Production Data Table */}
-                {type !== "packing" && (
-                    <ProductionDataCard
-                        data={selectedRequest?.production_data}
-                    />
-                )}
+                            {/* Qr Code */}
+                            {type === "packing" && (
+                                <QRScanCard
+                                    count={count}
+                                    onScan={handlePackingScan}
+                                />
+                            )}
+                        </div>
 
-<<<<<<< Updated upstream
-                {type === "packing" && (
-                    <ProductionDataCard data={productionData} />
-                )}
-=======
                         {/* Production Data Table */}
                         {type !== "packing" && (
                             <ProductionDataCard
@@ -401,7 +338,6 @@ export default function Kiosk({ type }: Type) {
                         />
                     </TabsContent>
                 </Tabs>
->>>>>>> Stashed changes
             </div>
 
             {/* Request Modal */}
