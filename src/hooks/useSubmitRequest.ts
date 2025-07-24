@@ -39,7 +39,7 @@ export const useSubmitRequest = <T extends Record<string, unknown>>({
                 throw new Error(result.errors || "Failed to submit request.");
             }
 
-            toast.success("Request created successfully");
+            toast.success(result.message);
             setIsRequestModalOpen(false);
             setRefetchSignal((prev) => !prev);
             setFormData(defaultFormData);

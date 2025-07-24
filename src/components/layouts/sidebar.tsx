@@ -21,7 +21,7 @@ export default function Sidebar({
 }) {
     return (
         <aside
-            className={`fixed left-0 top-0 h-screen w-64 bg-white/95 backdrop-blur-sm border-r border-gray-200 p-4 z-40 transition-transform duration-300 ${
+            className={`fixed left-0 top-0 h-screen w-72 bg-white/95 backdrop-blur-sm border-r border-gray-200 p-4 z-40 transition-transform duration-300 ${
                 isOpen ? "translate-x-0" : "-translate-x-full"
             }`}
         >
