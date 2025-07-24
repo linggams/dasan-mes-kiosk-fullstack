@@ -126,7 +126,10 @@ export default function QrScanInput({
             );
 
             const result = await res.json();
-            if (!res.ok) throw new Error(result?.error);
+            if (!res.ok) {
+                toast.error(result.message);
+                return;
+            }
 
             onStage?.("finishing");
             setIsQrModalOpen(false);
@@ -181,7 +184,10 @@ export default function QrScanInput({
             );
 
             const result = await res.json();
-            if (!res.ok) throw new Error(result?.error);
+            if (!res.ok) {
+                toast.error(result.message);
+                return;
+            }
 
             fetchRequestDetail(requestId);
             onStage?.("finishing");
