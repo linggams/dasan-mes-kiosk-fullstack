@@ -8,18 +8,17 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import YouTube from "react-youtube";
+import { ProcessLayout } from "@/types/request";
 
-export default function ProcessLayoutCard({ data }) {
-    if (!data || data.length === 0) {
-        return (
-            <p className="p-4 text-gray-500">
-                No process layout data available.
-            </p>
-        );
-    }
+interface ProcessLayoutCardProps {
+    data: ProcessLayout[];
+}
 
+export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    console.log(data)
 
     const openModal = (url: string) => {
         setVideoUrl(url);
@@ -35,6 +34,14 @@ export default function ProcessLayoutCard({ data }) {
         const match = url.match(/(?:\?v=|\.be\/)([a-zA-Z0-9_-]+)/);
         return match ? match[1] : null;
     };
+
+    if (!data || data.length === 0) {
+        return (
+            <p className="p-4 text-gray-500">
+                No process layout data available.
+            </p>
+        );
+    }
 
     return (
         <>
@@ -97,6 +104,7 @@ export default function ProcessLayoutCard({ data }) {
                                         {row.video ? (
                                             <button
                                                 onClick={() =>
+                                                    row.video &&
                                                     openModal(row.video)
                                                 }
                                                 className="text-red-500 hover:text-red-600"
@@ -120,7 +128,7 @@ export default function ProcessLayoutCard({ data }) {
 
             <Dialog open={isModalOpen} onOpenChange={closeModal}>
                 <DialogContent
-                    className="w-full max-w-6xl h-[40vh] max-h-[120vh] z-[9999] bg-white overflow-hidden"
+                    className="w-full max-w-6xl h-[90vh] max-h-[90vh] z-[9999] bg-white overflow-hidden"
                     style={{ padding: 0 }}
                 >
                     <DialogHeader className="p-4 border-b">
