@@ -48,7 +48,14 @@ export default function ProcessModal({
                         where it occurred.
                     </p>
 
-                    <div className="space-y-4 max-h-120 overflow-y-auto pr-2">
+                    <div
+                        className="space-y-4 max-h-150 pr-2"
+                        style={{
+                            height: "40vh",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
                         {selectedDefects.map((defect) => (
                             <div key={defect.key}>
                                 <label className="block mb-2 font-semibold">

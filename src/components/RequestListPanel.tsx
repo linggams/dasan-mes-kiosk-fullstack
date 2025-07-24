@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRequestList } from "@/hooks/useRequestList";
-import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 
 type Props = {
@@ -20,13 +19,15 @@ function formatDate(dateStr: string) {
 }
 
 function getStatusColor(status: string) {
-    switch (status) {
+    switch (status.toLowerCase()) {
         case "approved":
-            return "bg-green-100 text-green-700";
+            return "bg-green-400 border-green-500";
         case "pending":
-            return "bg-yellow-100 text-yellow-700";
+            return "bg-yellow-400 border-yellow-500";
+        case "rejected":
+            return "bg-red-400 border-red-500";
         default:
-            return "bg-red-100 text-red-700";
+            return "bg-gray-300 border-gray-400";
     }
 }
 
@@ -46,7 +47,7 @@ export default function RequestListPanel({
     const { requests } = useRequestList(line, refetchSignal);
 
     return (
-        <div className="py-1 px-2 overflow-y-auto h-[calc(100vh-64px)]">
+        <div className="py-1 overflow-y-auto h-[calc(100vh-64px)]">
             {requests ? (
                 requests.map((request) => {
                     const isSelected = request.id === requestId;
@@ -54,7 +55,7 @@ export default function RequestListPanel({
                     return (
                         <div
                             key={request.id}
-                            className={`border-b py-2 px-2 cursor-pointer transition-colors rounded ${
+                            className={`border-b border-gray-200 py-2 px-2 cursor-pointer transition-colors ${
                                 isSelected
                                     ? "bg-blue-50 hover:bg-blue-100"
                                     : "hover:bg-gray-50"
@@ -62,6 +63,7 @@ export default function RequestListPanel({
                             onClick={() => fetchRequestDetail?.(request.id)}
                         >
                             <div className="flex justify-between items-center">
+                                {/* LEFT */}
                                 <div className="flex flex-col">
                                     <span className="text-sm font-medium text-gray-900">
                                         {request.code}
@@ -81,11 +83,12 @@ export default function RequestListPanel({
                                     </div>
                                 </div>
 
-                                <Badge
-                                    className={getStatusColor(request.status)}
-                                >
-                                    {request.status}
-                                </Badge>
+                                {/* RIGHT */}
+                                <div
+                                    className={`w-3 h-3 rounded-full ${getStatusColor(
+                                        request.status
+                                    )}`}
+                                ></div>
                             </div>
                         </div>
                     );
