@@ -8,7 +8,7 @@ type Props = {
 
 export default function DefectTypeCard({ data, types, loading }: Props) {
     return (
-        <Card className="bg-white rounded-xl shadow-xl border-none">
+        <Card className="bg-white rounded-xl border border-gray-200">
             <CardContent>
                 {loading ? (
                     <div className="space-y-4 animate-pulse">
@@ -32,28 +32,37 @@ export default function DefectTypeCard({ data, types, loading }: Props) {
                 ) : (
                     <>
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-2xl font-bold text-gray-800">Defect</h3>
+                            <h3 className="text-2xl font-bold text-gray-800">
+                                Defect
+                            </h3>
                             <span className="text-3xl font-bold text-blue-600">
-                {data?.total_defect ?? 0}
-              </span>
+                                {data?.total_defect ?? 0}
+                            </span>
                         </div>
 
-                        <div className="bg-white/80 p-6 rounded-xl backdrop-blur-sm border border-gray-200 max-h-[32rem] overflow-y-auto">
+                        <div className="mt-6 max-h-120 overflow-y-auto pr-1">
                             <div className="space-y-2">
                                 {Array.isArray(types) &&
                                     types
-                                        .filter((type) => type.key !== "total_defect")
-                                        .sort((a, b) => (data?.[b.key] ?? 0) - (data?.[a.key] ?? 0))
+                                        .filter(
+                                            (type) =>
+                                                type.key !== "total_defect"
+                                        )
+                                        .sort(
+                                            (a, b) =>
+                                                (data?.[b.key] ?? 0) -
+                                                (data?.[a.key] ?? 0)
+                                        )
                                         .map((type) => (
                                             <div
                                                 key={type.key}
                                                 className="flex justify-between items-center p-2 bg-gray-50 rounded-lg border border-gray-100"
                                             >
                                                 <span className="text-gray-700 font-medium">
-                                                  {type.label}
+                                                    {type.label}
                                                 </span>
                                                 <span className="text-2xl font-bold text-gray-800">
-                                                  {data?.[type.key] ?? 0}
+                                                    {data?.[type.key] ?? 0}
                                                 </span>
                                             </div>
                                         ))}

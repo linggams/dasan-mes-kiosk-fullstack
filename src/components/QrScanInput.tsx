@@ -1,15 +1,16 @@
 "use client";
 
-import {useEffect, useState, useRef} from "react";
+import { useEffect, useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import QrScanModal from "@/components/modal/QrScanModal";
 import { toast } from "sonner";
 import { QRData } from "@/types/qr";
 import DefectTypeModal from "@/components/modal/DefectTypeModal";
-import ActionModal from "@/components/modal/ActionModal";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import ProcessModal from "@/components/modal/ProcessModal";
+// import ActionModal from "@/components/modal/ActionModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
-import {MasterDefectType} from "@/hooks/useMasterData";
+import { MasterDefectType, MasterProcess } from "@/hooks/useMasterData";
 
 type Props = {
     requestId?: number | null;
@@ -17,10 +18,18 @@ type Props = {
     onQrCodeChange?: (code: string) => void;
     onStage?: (stage: string) => void;
     defectTypes: MasterDefectType[];
+    processes: MasterProcess[];
 };
 
-export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeChange, onStage, defectTypes }: Props) {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`
+export default function QrScanInput({
+    requestId,
+    fetchRequestDetail,
+    onQrCodeChange,
+    onStage,
+    defectTypes,
+    processes,
+}: Props) {
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
     const [line, setLine] = useState("1");
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -32,23 +41,37 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
     const [isQrModalOpen, setIsQrModalOpen] = useState(false);
     const [qrData, setQrData] = useState<QRData | null>(null);
     const [isDefectTypeModalOpen, setIsDefectTypeModalOpen] = useState(false);
+    const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
     const [isActionModalOpen, setIsActionModalOpen] = useState(false);
-    const [selectedDefects, setSelectedDefects] = useState<MasterDefectType[]>([]);
+    const [selectedDefects, setSelectedDefects] = useState<MasterDefectType[]>(
+        []
+    );
+    const [defectProcessMap, setDefectProcessMap] = useState<
+        Record<string, number[]>
+    >({});
+
+    const processOptions = processes.map((p) => ({
+        value: p.id,
+        label: p.name,
+    }));
 
     const handleScan = async () => {
         if (!searchQuery.trim() || !requestId) return;
 
         try {
-            const res = await fetch(`${baseUrl}/kiosk/sewing/scan?line=${line}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    request_id: requestId,
-                    qr_code: searchQuery.trim(),
-                }),
-            });
+            const res = await fetch(
+                `${baseUrl}/kiosk/sewing/scan?line=${line}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        request_id: requestId,
+                        qr_code: searchQuery.trim(),
+                    }),
+                }
+            );
 
             const result = await res.json();
             if (!res.ok) {
@@ -88,19 +111,25 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
         if (!requestId || !qrData?.qrNumber) return;
 
         try {
-            const res = await fetch(`${baseUrl}/kiosk/sewing/pass?line=${line}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    request_id: requestId,
-                    qr_code: qrData?.qrNumber,
-                }),
-            });
+            const res = await fetch(
+                `${baseUrl}/kiosk/sewing/pass?line=${line}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        request_id: requestId,
+                        qr_code: qrData?.qrNumber,
+                    }),
+                }
+            );
 
             const result = await res.json();
-            if (!res.ok) throw new Error(result?.error);
+            if (!res.ok) {
+                toast.error(result.message);
+                return;
+            }
 
             onStage?.("finishing");
             setIsQrModalOpen(false);
@@ -124,32 +153,49 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
         setIsQrModalOpen(true);
     };
 
+    const handleProcessSelect = (defectKey: string, processIds: number[]) => {
+        setDefectProcessMap((prev) => ({
+            ...prev,
+            [defectKey]: processIds,
+        }));
+    };
+
     const handleRework = async (isRework: boolean) => {
         if (!requestId || !qrData?.qrNumber) return;
 
         try {
-            const res = await fetch(`${baseUrl}/kiosk/sewing/fail?line=${line}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    request_id: requestId,
-                    qr_code: qrData.qrNumber,
-                    defects: selectedDefects.map((d) => ({
-                        key: d.key,
-                        label: d.label
-                    })),
-                    is_rework: isRework,
-                }),
-            });
+            const res = await fetch(
+                `${baseUrl}/kiosk/sewing/fail?line=${line}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        request_id: requestId,
+                        qr_code: qrData.qrNumber,
+                        defects: selectedDefects.map((d) => ({
+                            key: d.key,
+                            processes: defectProcessMap[d.key] || [],
+                        })),
+                        is_rework: isRework,
+                    }),
+                }
+            );
 
             const result = await res.json();
-            if (!res.ok) throw new Error(result?.error);
+            if (!res.ok) {
+                toast.error(result.message);
+                return;
+            }
 
             fetchRequestDetail(requestId);
             onStage?.("finishing");
-            setIsActionModalOpen(false);
+
+            setIsProcessModalOpen(false);
+            setSelectedDefects([]);
+            setDefectProcessMap({});
+            setQrData(null);
             setSearchQuery("");
         } catch (err: unknown) {
             const error = err as Error;
@@ -171,7 +217,9 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
     }, []);
 
     useEffect(() => {
-        if (!isQrModalOpen && !isDefectTypeModalOpen && !isActionModalOpen) {
+        if (isQrModalOpen || isDefectTypeModalOpen || isActionModalOpen) {
+            inputRef.current?.blur();
+        } else {
             inputRef.current?.focus();
         }
     }, [isQrModalOpen, isDefectTypeModalOpen, isActionModalOpen]);
@@ -197,7 +245,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                 className="w-72 border-none"
             />
 
-            {/* Modal QR Scan Details */}
+            {/* Step 1: Modal QR Scan Details */}
             <QrScanModal
                 open={isQrModalOpen}
                 onClose={() => setIsQrModalOpen(false)}
@@ -206,7 +254,7 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                 onFail={handleFail}
             />
 
-            {/* Modal Defect Type */}
+            {/* Step 2: Modal Defect Type */}
             <DefectTypeModal
                 open={isDefectTypeModalOpen}
                 onClose={() => setIsDefectTypeModalOpen(false)}
@@ -214,18 +262,30 @@ export default function QrScanInput({ requestId, fetchRequestDetail, onQrCodeCha
                 onSelect={(defects) => {
                     setSelectedDefects(defects);
                     setIsDefectTypeModalOpen(false);
-                    setIsActionModalOpen(true);
+                    setIsProcessModalOpen(true);
                 }}
                 types={defectTypes}
             />
 
-            {/* Modal Action Selection */}
-            <ActionModal
+            {/* Step 3: Select a process to defect */}
+            <ProcessModal
+                open={isProcessModalOpen}
+                onClose={() => setIsProcessModalOpen(false)}
+                onBack={handleBackToDefect}
+                onNext={() => handleRework(true)}
+                selectedDefects={selectedDefects}
+                processOptions={processOptions}
+                selectedProcesses={defectProcessMap}
+                onProcessSelect={handleProcessSelect}
+            />
+
+            {/* Step 4: Modal Action Selection */}
+            {/* <ActionModal
                 open={isActionModalOpen}
                 onClose={() => setIsActionModalOpen(false)}
                 onBack={handleBackToDefect}
                 onFail={handleRework}
-            />
+            /> */}
         </div>
     );
 }

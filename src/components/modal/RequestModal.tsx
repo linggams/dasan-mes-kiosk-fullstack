@@ -3,16 +3,10 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import Select from "react-select";
 import { RequestFormData } from "@/types/request";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTimes} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
     open: boolean;
@@ -33,20 +27,32 @@ export default function RequestModal({
     supervisors,
     formData,
     setFormData,
-    onSubmit
+    onSubmit,
 }: Props) {
     if (!open) return null;
 
+    const buyerOptions = buyers.map((b) => ({ value: b.id, label: b.name }));
+    const styleOptions = styles.map((s) => ({ value: s.id, label: s.style }));
+    const supervisorOptions = supervisors.map((s) => ({
+        value: s.id,
+        label: s.name,
+    }));
+
     return (
-        <div className={`fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50"
-             ${open ? "flex" : "hidden"} `}>
+        <div
+            className={`fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50"
+             ${open ? "flex" : "hidden"} `}
+        >
             <div className="z-50 bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4">
                 <div className="p-8 relative">
                     <button
                         className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
                         onClick={onClose}
                     >
-                        <FontAwesomeIcon icon={faTimes} className="text-xl text-gray-500" />
+                        <FontAwesomeIcon
+                            icon={faTimes}
+                            className="text-xl text-gray-500"
+                        />
                     </button>
                     <h3 className="text-2xl font-bold text-gray-900 mb-6">
                         Create Request
@@ -56,95 +62,72 @@ export default function RequestModal({
                             <div>
                                 <Label className="mb-2">Buyer</Label>
                                 <Select
-                                    onValueChange={(value) =>
-                                        setFormData({ ...formData, buyer_id: Number(value) })
+                                    options={buyerOptions}
+                                    value={
+                                        buyerOptions.find(
+                                            (opt) =>
+                                                opt.value === formData.buyer_id
+                                        ) || null
                                     }
-                                    value={formData.buyer_id ? String(formData.buyer_id) : undefined}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select Buyer" />
-                                    </SelectTrigger>
-                                    <SelectContent className="w-full z-50 bg-white">
-                                        {buyers?.map((buyer) => (
-                                            <SelectItem key={buyer.id} value={String(buyer.id)}>
-                                                {buyer.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                    onChange={(selected) =>
+                                        setFormData({
+                                            ...formData,
+                                            buyer_id: selected?.value ?? 0,
+                                            cutting_id: 0, // reset style on buyer change
+                                        })
+                                    }
+                                    placeholder="Select Buyer"
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                />
                             </div>
 
                             <div>
                                 <Label className="mb-2">Style</Label>
                                 <Select
-                                    onValueChange={(value) => {
-                                        const selected = styles.find((style) => style.id === Number(value));
-                                        if (selected) {
-                                            setFormData({
-                                                ...formData,
-                                                cutting_id: selected.id
-                                            });
-                                        }
-                                    }}
-                                    value={formData.cutting_id ? String(formData.cutting_id) : undefined}
-                                    disabled={!formData.buyer_id}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select Style" />
-                                    </SelectTrigger>
-                                    <SelectContent className="w-full z-50 bg-white">
-                                        {styles?.map((cutting) => (
-                                            <SelectItem key={cutting.id} value={String(cutting.id)}>
-                                                {cutting.style}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                    options={styleOptions}
+                                    value={
+                                        styleOptions.find(
+                                            (opt) =>
+                                                opt.value ===
+                                                formData.cutting_id
+                                        ) || null
+                                    }
+                                    onChange={(selected) =>
+                                        setFormData({
+                                            ...formData,
+                                            cutting_id: selected?.value ?? 0,
+                                        })
+                                    }
+                                    placeholder="Select Style"
+                                    isDisabled={!formData.buyer_id}
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                />
                             </div>
 
                             <div>
                                 <Label className="mb-2">Supervisor</Label>
                                 <Select
-                                    onValueChange={(value) =>
-                                        setFormData({ ...formData, supervisor_id: Number(value) })
-                                    }
+                                    options={supervisorOptions}
                                     value={
-                                        formData.supervisor_id ? String(formData.supervisor_id) : undefined
+                                        supervisorOptions.find(
+                                            (opt) =>
+                                                opt.value ===
+                                                formData.supervisor_id
+                                        ) || null
                                     }
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select Supervisor" />
-                                    </SelectTrigger>
-                                    <SelectContent className="w-full z-50 bg-white">
-                                        {supervisors?.map((sup) => (
-                                            <SelectItem key={sup.id} value={String(sup.id)}>
-                                                {sup.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                    onChange={(selected) =>
+                                        setFormData({
+                                            ...formData,
+                                            supervisor_id: selected?.value ?? 0,
+                                        })
+                                    }
+                                    placeholder="Select Supervisor"
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                />
                             </div>
-
-                            {/*<SearchableSelect*/}
-                            {/*    label="Buyer"*/}
-                            {/*    options={buyers.map((b) => ({ id: b.id, label: b.name }))}*/}
-                            {/*    value={formData.buyer_id}*/}
-                            {/*    onChange={(id) => setFormData({ ...formData, buyer_id: id })}*/}
-                            {/*/>*/}
-
-                            {/*<SearchableSelect*/}
-                            {/*    label="Style"*/}
-                            {/*    options={styles.map((s) => ({ id: s.id, label: s.style }))}*/}
-                            {/*    value={formData.order_id}*/}
-                            {/*    onChange={(id) => setFormData({ ...formData, order_id: id })}*/}
-                            {/*/>*/}
-
-                            {/*<SearchableSelect*/}
-                            {/*    label="Supervisor"*/}
-                            {/*    options={supervisors.map((s) => ({ id: s.id, label: s.name }))}*/}
-                            {/*    value={formData.supervisor_id}*/}
-                            {/*    onChange={(id) => setFormData({ ...formData, supervisor_id: id })}*/}
-                            {/*/>*/}
 
                             <div className="mt-8 flex gap-4">
                                 <Button
