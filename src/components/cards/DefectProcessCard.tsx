@@ -39,7 +39,7 @@ export default function DefectProcessCard({ data, processes, loading }: Props) {
                             </span>
                         </div>
 
-                        <div className="space-y-2 mt-6">
+                        <div className="mt-6 max-h-120 overflow-y-auto pr-1">
                             {processes
                                 .filter((p) => p.id in data)
                                 .sort(
