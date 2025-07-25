@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Header from "@/components/layouts/header";
 import ImagePreviewCard from "@/components/cards/ImagePreviewCard";
 import InformationCard from "@/components/cards/InformationCard";
