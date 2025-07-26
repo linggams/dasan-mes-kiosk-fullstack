@@ -107,7 +107,7 @@ export default function QrScanModal({
                             onClick={onPass}
                             className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors text-lg"
                         >
-                            Pass
+                            Pass (Enter)
                         </button>
                         <button
                             onClick={onFail}
