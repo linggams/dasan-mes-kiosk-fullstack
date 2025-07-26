@@ -11,6 +11,7 @@ interface HeaderProps {
     date: string;
     time: string;
     toggleSidebar: () => void;
+    isSidebarOpen?: boolean;
 }
 
 export default function Header({
@@ -18,9 +19,14 @@ export default function Header({
     date,
     time,
     toggleSidebar,
+    isSidebarOpen,
 }: HeaderProps) {
     return (
-        <header className="sticky top-0 z-40 bg-white/80 border-b border-gray-200 backdrop-blur-md p-4 mt-0">
+        <header
+            className={`${
+                isSidebarOpen ? "" : "sticky top-0"
+            } z-40 bg-white/80 border-b border-gray-200 backdrop-blur-md p-4 mt-0`}
+        >
             <div className="grid grid-cols-2 items-center">
                 <div className="flex items-center space-x-4">
                     <Button variant="outline" onClick={toggleSidebar}>

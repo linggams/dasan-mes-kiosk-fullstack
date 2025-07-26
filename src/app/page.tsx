@@ -124,7 +124,14 @@ export default function SewingPage() {
     };
 
     return (
-        <div className="flex select-none">
+        <div className="flex select-none relative">
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-30 transition-opacity"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
             <Sidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
@@ -137,16 +144,13 @@ export default function SewingPage() {
                 refetchSignal={refetchSignal ?? undefined}
             />
 
-            <div
-                className={`p-6 space-y-6 transition-all w-full ${
-                    isSidebarOpen ? "ml-64" : ""
-                }`}
-            >
+            <div className="p-6 space-y-6 transition-all w-full">
                 <Header
                     type="home"
                     date={date}
                     time={time}
                     toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                    isSidebarOpen={isSidebarOpen}
                 />
 
                 {selectedRequest && (
@@ -183,6 +187,7 @@ export default function SewingPage() {
                                                 }
                                                 defectTypes={defectTypes}
                                                 processes={processes}
+                                                isSidebarOpen={isSidebarOpen}
                                             />
                                         </div>
                                     )}
@@ -192,7 +197,7 @@ export default function SewingPage() {
                 )}
 
                 <Tabs defaultValue="general" className="w-full space-y-6">
-                    <TabsList className="w-full flex">
+                    <TabsList className="w-full flex border border-gray-300 rounded-md overflow-hidden">
                         <TabsTrigger
                             value="general"
                             className="flex-1 text-center data-[state=active]:bg-black data-[state=active]:text-white"
