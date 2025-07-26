@@ -234,7 +234,7 @@ export default function QrScanInput({
     }, [isQrModalOpen, isDefectTypeModalOpen, isActionModalOpen]);
 
     useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
+        const handleKeyDown = () => {
             const active = document.activeElement;
             if (
                 active &&
