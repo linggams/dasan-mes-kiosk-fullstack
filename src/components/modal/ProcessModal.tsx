@@ -29,6 +29,12 @@ export default function ProcessModal({
 }: Props) {
     if (!open) return null;
 
+    const isProcessSelectionComplete = selectedDefects.every(
+        (defect) =>
+            selectedProcesses[defect.key] &&
+            selectedProcesses[defect.key].length > 0
+    );
+
     return (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4">
@@ -84,21 +90,42 @@ export default function ProcessModal({
                         ))}
                     </div>
                     <div className="mt-6 flex justify-end gap-4">
+                        {!isProcessSelectionComplete && (
+                            <p className="text-red-500 text-sm mt-2">
+                                Please select at least one process for each
+                                defect before proceeding.
+                            </p>
+                        )}
+
                         <button
-                            onClick={onBack}
+                            onClick={() => {
+                                onBack();
+                                onClose();
+                            }}
                             className="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200"
                         >
                             Back
                         </button>
                         <button
                             onClick={() => onNext(false)}
-                            className="bg-red-400 text-white px-6 py-3 rounded-lg hover:bg-red-500"
+                            className={`px-6 py-3 rounded-lg text-white ${
+                                isProcessSelectionComplete
+                                    ? "bg-red-400 hover:bg-red-500"
+                                    : "bg-red-200 cursor-not-allowed"
+                            }`}
+                            disabled={!isProcessSelectionComplete}
                         >
                             CNCM
                         </button>
+
                         <button
                             onClick={() => onNext(true)}
-                            className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600"
+                            className={`px-6 py-3 rounded-lg text-white ${
+                                isProcessSelectionComplete
+                                    ? "bg-gray-500 hover:bg-gray-600"
+                                    : "bg-gray-300 cursor-not-allowed"
+                            }`}
+                            disabled={!isProcessSelectionComplete}
                         >
                             Rework
                         </button>

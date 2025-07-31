@@ -41,6 +41,7 @@ export type LineInfoTypes = {
 
 export type ProcessLayout = {
     no: number;
+    id: number;
     process: string;
     machineType: string;
     classType: string;
@@ -48,4 +49,9 @@ export type ProcessLayout = {
     standardTime: string;
     video?: string;
     manPower: string;
+};
+
+export type OrderProcess = {
+    id: number;
+    name: string;
 };

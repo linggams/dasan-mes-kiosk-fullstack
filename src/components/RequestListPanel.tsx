@@ -55,7 +55,7 @@ export default function RequestListPanel({
                     return (
                         <div
                             key={request.id}
-                            className={`border-b border-gray-200 py-2 px-2 cursor-pointer transition-colors ${
+                            className={`border-b border-gray-200 py-2 px-4 cursor-pointer transition-colors ${
                                 isSelected
                                     ? "bg-blue-50 hover:bg-blue-100"
                                     : "hover:bg-gray-50"

@@ -19,6 +19,7 @@ type Props = {
     onStage?: (stage: string) => void;
     defectTypes: MasterDefectType[];
     processes: MasterProcess[];
+    isSidebarOpen?: boolean;
 };
 
 export default function QrScanInput({
@@ -28,6 +29,7 @@ export default function QrScanInput({
     onStage,
     defectTypes,
     processes,
+    isSidebarOpen,
 }: Props) {
     const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
     const [line, setLine] = useState("1");
@@ -126,7 +128,10 @@ export default function QrScanInput({
             );
 
             const result = await res.json();
-            if (!res.ok) throw new Error(result?.error);
+            if (!res.ok) {
+                toast.error(result.message);
+                return;
+            }
 
             onStage?.("finishing");
             setIsQrModalOpen(false);
@@ -181,7 +186,10 @@ export default function QrScanInput({
             );
 
             const result = await res.json();
-            if (!res.ok) throw new Error(result?.error);
+            if (!res.ok) {
+                toast.error(result.message);
+                return;
+            }
 
             fetchRequestDetail(requestId);
             onStage?.("finishing");
@@ -206,18 +214,46 @@ export default function QrScanInput({
     };
 
     const inputRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
         inputRef.current?.focus();
     }, []);
 
     useEffect(() => {
-        if (!isQrModalOpen && !isDefectTypeModalOpen && !isActionModalOpen) {
+        if (!isSidebarOpen) {
+            inputRef.current?.focus();
+        }
+    }, [isSidebarOpen]);
+
+    useEffect(() => {
+        if (isQrModalOpen || isDefectTypeModalOpen || isActionModalOpen) {
+            inputRef.current?.blur();
+        } else {
             inputRef.current?.focus();
         }
     }, [isQrModalOpen, isDefectTypeModalOpen, isActionModalOpen]);
 
+    useEffect(() => {
+        const handleKeyDown = () => {
+            const active = document.activeElement;
+            if (
+                active &&
+                active.tagName !== "INPUT" &&
+                active.tagName !== "TEXTAREA"
+            ) {
+                inputRef.current?.focus();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
     return (
-        <div className="ml-auto flex items-center border border-gray-300 rounded-lg px-3 w-72 bg-white">
+        <div className="ml-auto flex items-center border-2 border-blue-500 rounded-lg px-3 w-72 bg-white shadow-sm focus-within:ring-2 focus-within:ring-blue-300 transition">
             <FontAwesomeIcon
                 icon={faQrcode}
                 className="text-blue-500 text-xl mr-2"
