@@ -23,14 +23,6 @@
             "@/*": ["./src/*"]
         }
     },
-    "include": [
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        ".next/types/**/*.ts",
-        "src/components/Kiosk.tsx",
-        "src/app/packing/page.old",
-        "src/app/page.old"
-    ],
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/Kiosk.old"],
     "exclude": ["node_modules"]
 }
