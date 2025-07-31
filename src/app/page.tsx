@@ -83,11 +83,17 @@ export default function SewingPage() {
         handleSubmit,
     } = useSubmitRequest({ baseUrl, line, defaultFormData });
 
-    const { buyers, styles, supervisors, defectTypes, processes, loading } =
-        useMasterData(baseUrl, formData.buyer_id);
+    const { buyers, styles, supervisors, defectTypes, loading } = useMasterData(
+        baseUrl,
+        formData.buyer_id
+    );
 
-    const { selectedRequestId, selectedRequest, fetchRequestDetail } =
-        useRequestDetail(baseUrl, line);
+    const {
+        selectedRequestId,
+        selectedRequest,
+        fetchRequestDetail,
+        processes,
+    } = useRequestDetail(baseUrl, line);
 
     const { updateStage } = useUpdateStage({
         baseUrl,
