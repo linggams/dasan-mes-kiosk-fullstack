@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { ProductionData, RequestData, ProcessLayout } from "@/types/request";
+import { ProductionData, RequestData, ProcessLayout, OrderProcess } from "@/types/request";
 import { ManPower, OrderInfo } from "@/types/order";
 
 export type RequestDetail = {
@@ -12,6 +12,7 @@ export type RequestDetail = {
     process_summary: Record<string, number>;
     production_data: ProductionData;
     process_layout?: ProcessLayout[];
+    order_process?: OrderProcess[];
 };
 
 export const useRequestDetail = (baseUrl: string, line: string) => {
@@ -20,6 +21,8 @@ export const useRequestDetail = (baseUrl: string, line: string) => {
     );
     const [selectedRequest, setSelectedRequest] =
         useState<RequestDetail | null>(null);
+
+    const [processes, setProcesses] = useState<OrderProcess[]>([]);
 
     const fetchRequestDetail = async (reqId: number) => {
         setSelectedRequestId(reqId);
@@ -40,6 +43,7 @@ export const useRequestDetail = (baseUrl: string, line: string) => {
             detail.defect_summary ??= {};
             detail.process_summary ??= {};
             setSelectedRequest(detail);
+            setProcesses(detail.order_process);
         } catch (error: unknown) {
             const err = error as Error;
             toast.error(err.message);
@@ -50,5 +54,6 @@ export const useRequestDetail = (baseUrl: string, line: string) => {
         selectedRequestId,
         selectedRequest,
         fetchRequestDetail,
+        processes,
     };
 };

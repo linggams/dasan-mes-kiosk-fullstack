@@ -21,17 +21,11 @@ export type MasterDefectType = {
     label: string;
 };
 
-export type MasterProcess = {
-    id: number;
-    name: string;
-};
-
 export const useMasterData = (baseUrl: string, buyerId?: number) => {
     const [buyers, setBuyers] = useState<MasterBuyer[]>([]);
     const [styles, setStyles] = useState<MasterStyle[]>([]);
     const [supervisors, setSupervisors] = useState<MasterSupervisor[]>([]);
     const [defectTypes, setDefectTypes] = useState<MasterDefectType[]>([]);
-    const [processes, setProcesses] = useState<MasterProcess[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -39,23 +33,20 @@ export const useMasterData = (baseUrl: string, buyerId?: number) => {
             setLoading(true);
 
             try {
-                const [buyersRes, supervisorsRes, defectTypesRes, processRes] =
+                const [buyersRes, supervisorsRes, defectTypesRes] =
                     await Promise.all([
                         fetch(`${baseUrl}/kiosk/master/buyers`),
                         fetch(`${baseUrl}/kiosk/master/supervisors`),
                         fetch(`${baseUrl}/kiosk/master/defect-types`),
-                        fetch(`${baseUrl}/kiosk/master/processes`),
                     ]);
 
                 const buyersData = await buyersRes.json();
                 const supervisorsData = await supervisorsRes.json();
                 const defectTypesData = await defectTypesRes.json();
-                const processData = await processRes.json();
 
                 setBuyers(buyersData.data);
                 setSupervisors(supervisorsData.data);
                 setDefectTypes(defectTypesData.data);
-                setProcesses(processData.data);
             } catch (error: unknown) {
                 const err = error as Error;
                 toast.error(`Error fetching master data: ${err.message}`);
@@ -94,7 +85,6 @@ export const useMasterData = (baseUrl: string, buyerId?: number) => {
         styles,
         supervisors,
         defectTypes,
-        processes,
         loading,
     };
 };
