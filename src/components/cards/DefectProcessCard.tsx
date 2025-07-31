@@ -1,12 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
 
 type Props = {
-    data: Record<string, number>;
-    processes: { id: number; name: string }[];
+    data: {
+        total_defect: number;
+        processes: { name: string; defect_count: number }[];
+    };
     loading: boolean;
 };
 
-export default function DefectProcessCard({ data, processes, loading }: Props) {
+export default function DefectProcessCard({ data, loading }: Props) {
     return (
         <Card className="bg-white rounded-xl border-gray-200">
             <CardContent>
@@ -40,22 +42,20 @@ export default function DefectProcessCard({ data, processes, loading }: Props) {
                         </div>
 
                         <div className="mt-6 max-h-120 overflow-y-auto pr-1">
-                            {processes
-                                .filter((p) => p.id in data)
-                                .sort(
-                                    (a, b) =>
-                                        (data[b.id] ?? 0) - (data[a.id] ?? 0)
+                            {data?.processes
+                                ?.sort(
+                                    (a, b) => b.defect_count - a.defect_count
                                 )
-                                .map((process) => (
+                                ?.map((process, index) => (
                                     <div
-                                        key={process.id}
+                                        key={index}
                                         className="flex justify-between items-center p-2 bg-gray-50 rounded-lg border border-gray-100"
                                     >
                                         <span className="text-gray-700 font-medium">
                                             {process.name}
                                         </span>
                                         <span className="text-2xl font-bold text-gray-800">
-                                            {data?.[process.id] ?? 0}
+                                            {process.defect_count}
                                         </span>
                                     </div>
                                 ))}
