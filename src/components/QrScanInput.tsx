@@ -10,7 +10,8 @@ import ProcessModal from "@/components/modal/ProcessModal";
 // import ActionModal from "@/components/modal/ActionModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
-import { MasterDefectType, MasterProcess } from "@/hooks/useMasterData";
+import { MasterDefectType } from "@/hooks/useMasterData";
+import { OrderProcess } from "@/types/request";
 
 type Props = {
     requestId?: number | null;
@@ -18,7 +19,7 @@ type Props = {
     onQrCodeChange?: (code: string) => void;
     onStage?: (stage: string) => void;
     defectTypes: MasterDefectType[];
-    processes: MasterProcess[];
+    processes: OrderProcess[];
     isSidebarOpen?: boolean;
 };
 
