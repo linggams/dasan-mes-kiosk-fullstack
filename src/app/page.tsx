@@ -114,11 +114,6 @@ export default function SewingPage() {
         ...(selectedRequest?.defect_summary || {}),
     };
 
-    const processOptions = processes.map((p) => ({
-        label: p.name,
-        value: typeof p.id === "string" ? parseInt(p.id, 10) : p.id,
-    }));
-
     const isToday = (dateStr: string) => {
         const requestDate = new Date(dateStr);
         const today = new Date();
@@ -231,11 +226,12 @@ export default function SewingPage() {
                                 loading={loading}
                             />
                             <DefectProcessCard
-                                data={selectedRequest?.process_summary || {}}
-                                processes={processOptions.map((p) => ({
-                                    id: p.value,
-                                    name: p.label,
-                                }))}
+                                data={
+                                    selectedRequest?.process_summary ?? {
+                                        total_defect: 0,
+                                        processes: [],
+                                    }
+                                }
                                 loading={loading}
                             />
                         </div>

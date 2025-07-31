@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { ProductionData, RequestData, ProcessLayout, OrderProcess } from "@/types/request";
+import {
+    ProductionData,
+    RequestData,
+    ProcessLayout,
+    OrderProcess,
+} from "@/types/request";
 import { ManPower, OrderInfo } from "@/types/order";
 
 export type RequestDetail = {
@@ -9,7 +14,13 @@ export type RequestDetail = {
     order_info: OrderInfo;
     man_power: ManPower;
     defect_summary: Record<string, number>;
-    process_summary: Record<string, number>;
+    process_summary: {
+        total_defect: number;
+        processes: {
+            name: string;
+            defect_count: number;
+        }[];
+    };
     production_data: ProductionData;
     process_layout?: ProcessLayout[];
     order_process?: OrderProcess[];
