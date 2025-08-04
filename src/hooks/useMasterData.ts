@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export type MasterBuyer = {
+export type MasterCutting = {
     id: number;
+    order_id: number;
     name: string;
 };
 
-export type MasterStyle = {
-    id: number;
-    style: string;
-};
+// export type MasterBuyer = {
+// id: number;
+// name: string;
+// };
+
+// export type MasterStyle = {
+//     id: number;
+//     style: string;
+// };
 
 export type MasterSupervisor = {
     id: number;
@@ -21,9 +27,10 @@ export type MasterDefectType = {
     label: string;
 };
 
-export const useMasterData = (baseUrl: string, buyerId?: number) => {
-    const [buyers, setBuyers] = useState<MasterBuyer[]>([]);
-    const [styles, setStyles] = useState<MasterStyle[]>([]);
+export const useMasterData = (baseUrl: string) => {
+    const [cuttings, setCuttings] = useState<MasterCutting[]>([]);
+    // const [buyers, setBuyers] = useState<MasterBuyer[]>([]);
+    // const [styles, setStyles] = useState<MasterStyle[]>([]);
     const [supervisors, setSupervisors] = useState<MasterSupervisor[]>([]);
     const [defectTypes, setDefectTypes] = useState<MasterDefectType[]>([]);
     const [loading, setLoading] = useState(true);
@@ -33,18 +40,25 @@ export const useMasterData = (baseUrl: string, buyerId?: number) => {
             setLoading(true);
 
             try {
-                const [buyersRes, supervisorsRes, defectTypesRes] =
-                    await Promise.all([
-                        fetch(`${baseUrl}/kiosk/master/buyers`),
-                        fetch(`${baseUrl}/kiosk/master/supervisors`),
-                        fetch(`${baseUrl}/kiosk/master/defect-types`),
-                    ]);
+                const [
+                    cuttingsRes,
+                    // buyersRes,
+                    supervisorsRes,
+                    defectTypesRes,
+                ] = await Promise.all([
+                    fetch(`${baseUrl}/kiosk/master/cuttings`),
+                    // fetch(`${baseUrl}/kiosk/master/buyers`),
+                    fetch(`${baseUrl}/kiosk/master/supervisors`),
+                    fetch(`${baseUrl}/kiosk/master/defect-types`),
+                ]);
 
-                const buyersData = await buyersRes.json();
+                const cuttingsData = await cuttingsRes.json();
+                // const buyersData = await buyersRes.json();
                 const supervisorsData = await supervisorsRes.json();
                 const defectTypesData = await defectTypesRes.json();
 
-                setBuyers(buyersData.data);
+                setCuttings(cuttingsData.data);
+                // setBuyers(buyersData.data);
                 setSupervisors(supervisorsData.data);
                 setDefectTypes(defectTypesData.data);
             } catch (error: unknown) {
@@ -58,31 +72,32 @@ export const useMasterData = (baseUrl: string, buyerId?: number) => {
         fetchData();
     }, [baseUrl]);
 
-    useEffect(() => {
-        const fetchStyles = async () => {
-            if (!buyerId) {
-                setStyles([]);
-                return;
-            }
+    // useEffect(() => {
+    //     const fetchStyles = async () => {
+    //         if (!buyerId) {
+    //             setStyles([]);
+    //             return;
+    //         }
 
-            try {
-                const stylesRes = await fetch(
-                    `${baseUrl}/kiosk/master/styles?buyer_id=${buyerId}`
-                );
-                const stylesData = await stylesRes.json();
-                setStyles(stylesData.data);
-            } catch (error: unknown) {
-                const err = error as Error;
-                toast.error(`Error fetching styles: ${err.message}`);
-            }
-        };
+    //         try {
+    //             const stylesRes = await fetch(
+    //                 `${baseUrl}/kiosk/master/styles?buyer_id=${buyerId}`
+    //             );
+    //             const stylesData = await stylesRes.json();
+    //             setStyles(stylesData.data);
+    //         } catch (error: unknown) {
+    //             const err = error as Error;
+    //             toast.error(`Error fetching styles: ${err.message}`);
+    //         }
+    //     };
 
-        fetchStyles();
-    }, [buyerId, baseUrl]);
+    //     fetchStyles();
+    // }, [buyerId, baseUrl]);
 
     return {
-        buyers,
-        styles,
+        cuttings,
+        // buyers,
+        // styles,
         supervisors,
         defectTypes,
         loading,

@@ -8,8 +8,9 @@ export type Request = {
 };
 
 export type RequestFormData = {
-    buyer_id?: number;
-    cutting_id?: number;
+    id?: number;
+    // buyer_id?: number;
+    // cutting_id?: number;
     line_id?: number;
     supervisor_id?: number;
 };

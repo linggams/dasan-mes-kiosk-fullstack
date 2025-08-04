@@ -11,8 +11,9 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 type Props = {
     open: boolean;
     onClose: () => void;
-    buyers: { id: number; name: string }[];
-    styles: { id: number; style: string }[];
+    cuttings: { id: number; name: string }[];
+    // buyers: { id: number; name: string }[];
+    // styles: { id: number; style: string }[];
     supervisors: { id: number; name: string }[];
     formData: RequestFormData;
     setFormData: (data: RequestFormData) => void;
@@ -22,8 +23,9 @@ type Props = {
 export default function RequestModal({
     open,
     onClose,
-    buyers,
-    styles,
+    cuttings,
+    // buyers,
+    // styles,
     supervisors,
     formData,
     setFormData,
@@ -31,8 +33,12 @@ export default function RequestModal({
 }: Props) {
     if (!open) return null;
 
-    const buyerOptions = buyers.map((b) => ({ value: b.id, label: b.name }));
-    const styleOptions = styles.map((s) => ({ value: s.id, label: s.style }));
+    const cuttingOptions = cuttings.map((b) => ({
+        value: b.id,
+        label: b.name,
+    }));
+    // const buyerOptions = buyers.map((b) => ({ value: b.id, label: b.name }));
+    // const styleOptions = styles.map((s) => ({ value: s.id, label: s.style }));
     const supervisorOptions = supervisors.map((s) => ({
         value: s.id,
         label: s.name,
@@ -60,29 +66,28 @@ export default function RequestModal({
                     <div className="space-y-3">
                         <form className="space-y-4" onSubmit={onSubmit}>
                             <div>
-                                <Label className="mb-2">Buyer</Label>
+                                <Label className="mb-2">Order</Label>
                                 <Select
-                                    options={buyerOptions}
+                                    options={cuttingOptions}
                                     value={
-                                        buyerOptions.find(
-                                            (opt) =>
-                                                opt.value === formData.buyer_id
+                                        cuttingOptions.find(
+                                            (opt) => opt.value === formData.id
                                         ) || null
                                     }
                                     onChange={(selected) =>
                                         setFormData({
                                             ...formData,
-                                            buyer_id: selected?.value ?? 0,
-                                            cutting_id: 0, // reset style on buyer change
+                                            id: selected?.value ?? 0,
+                                            // cutting_id: 0, // reset style on buyer change
                                         })
                                     }
-                                    placeholder="Select Buyer"
+                                    placeholder="Choose Order ID | Buyer | Style | Company"
                                     className="react-select-container"
                                     classNamePrefix="react-select"
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <Label className="mb-2">Style</Label>
                                 <Select
                                     options={styleOptions}
@@ -104,7 +109,7 @@ export default function RequestModal({
                                     className="react-select-container"
                                     classNamePrefix="react-select"
                                 />
-                            </div>
+                            </div> */}
 
                             <div>
                                 <Label className="mb-2">Supervisor</Label>

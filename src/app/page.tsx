@@ -21,6 +21,7 @@ import { useSubmitRequest } from "@/hooks/useSubmitRequest";
 import { useRequestDetail } from "@/hooks/useRequestDetail";
 import { useMasterData } from "@/hooks/useMasterData";
 import { useUpdateStage } from "@/hooks/useUpdateStage";
+// import { getOverlappingDaysInIntervals } from "date-fns";
 
 export default function SewingPage() {
     const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
@@ -83,9 +84,16 @@ export default function SewingPage() {
         handleSubmit,
     } = useSubmitRequest({ baseUrl, line, defaultFormData });
 
-    const { buyers, styles, supervisors, defectTypes, loading } = useMasterData(
-        baseUrl,
-        formData.buyer_id
+    const {
+        cuttings,
+        // buyers,
+        // styles,
+        supervisors,
+        defectTypes,
+        loading,
+    } = useMasterData(
+        baseUrl
+        // formData.buyer_id
     );
 
     const {
@@ -252,8 +260,9 @@ export default function SewingPage() {
             <RequestModal
                 open={isRequestModalOpen}
                 onClose={() => setIsRequestModalOpen(false)}
-                buyers={buyers}
-                styles={styles}
+                cuttings={cuttings}
+                // buyers={buyers}
+                // styles={styles}
                 supervisors={supervisors}
                 formData={formData}
                 setFormData={setFormData}
