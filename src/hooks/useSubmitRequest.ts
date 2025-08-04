@@ -16,8 +16,8 @@ export const useSubmitRequest = <T extends Record<string, unknown>>({
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
     const [refetchSignal, setRefetchSignal] = useState(false);
     const [formData, setFormData] = useState<RequestFormData>({
-        buyer_id: undefined,
-        cutting_id: undefined,
+        id: undefined,
+        // buyer_id: undefined,
         line_id: undefined,
         supervisor_id: undefined,
     });
@@ -36,7 +36,8 @@ export const useSubmitRequest = <T extends Record<string, unknown>>({
             const result = await res.json();
 
             if (!res.ok) {
-                throw new Error(result.errors || "Failed to submit request.");
+                toast.warning(result.errors || result.message);
+                return;
             }
 
             toast.success(result.message);
