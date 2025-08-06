@@ -301,7 +301,7 @@ export default function QrScanInput({
                 open={isProcessModalOpen}
                 onClose={() => setIsProcessModalOpen(false)}
                 onBack={handleBackToDefect}
-                onNext={() => handleRework(true)}
+                onNext={handleRework}
                 selectedDefects={selectedDefects}
                 processOptions={processOptions}
                 selectedProcesses={defectProcessMap}
