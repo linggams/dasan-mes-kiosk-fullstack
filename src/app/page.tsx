@@ -96,12 +96,8 @@ export default function SewingPage() {
         // formData.buyer_id
     );
 
-    const {
-        selectedRequestId,
-        selectedRequest,
-        fetchRequestDetail,
-        processes,
-    } = useRequestDetail(baseUrl, line);
+    const { selectedRequestId, selectedRequest, selectRequest, processes } =
+        useRequestDetail(baseUrl, line);
 
     const { updateStage } = useUpdateStage({
         baseUrl,
@@ -148,7 +144,7 @@ export default function SewingPage() {
                     setFormData(defaultFormData);
                     setIsRequestModalOpen(true);
                 }}
-                fetchRequestDetail={fetchRequestDetail}
+                fetchRequestDetail={selectRequest}
                 selectedRequestId={selectedRequestId ?? undefined}
                 refetchSignal={refetchSignal ?? undefined}
             />
@@ -184,9 +180,6 @@ export default function SewingPage() {
                                                 requestId={
                                                     selectedRequestId ??
                                                     undefined
-                                                }
-                                                fetchRequestDetail={
-                                                    fetchRequestDetail
                                                 }
                                                 onQrCodeChange={(data) =>
                                                     setSelectedQrCode(data)

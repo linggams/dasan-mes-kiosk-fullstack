@@ -15,7 +15,6 @@ import { OrderProcess } from "@/types/request";
 
 type Props = {
     requestId?: number | null;
-    fetchRequestDetail: (id: number) => void;
     onQrCodeChange?: (code: string) => void;
     onStage?: (stage: string) => void;
     defectTypes: MasterDefectType[];
@@ -25,7 +24,6 @@ type Props = {
 
 export default function QrScanInput({
     requestId,
-    fetchRequestDetail,
     onQrCodeChange,
     onStage,
     defectTypes,
@@ -137,7 +135,7 @@ export default function QrScanInput({
             onStage?.("finishing");
             setIsQrModalOpen(false);
             setSearchQuery("");
-            fetchRequestDetail(requestId);
+            //fetchRequestDetail(requestId);
         } catch (err: unknown) {
             const error = err as Error;
             toast.error(error.message);
@@ -192,7 +190,7 @@ export default function QrScanInput({
                 return;
             }
 
-            fetchRequestDetail(requestId);
+            // fetchRequestDetail(requestId);
             onStage?.("finishing");
 
             setIsProcessModalOpen(false);

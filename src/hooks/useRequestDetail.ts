@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import {
     ProductionData,
@@ -32,39 +32,54 @@ export const useRequestDetail = (baseUrl: string, line: string) => {
     );
     const [selectedRequest, setSelectedRequest] =
         useState<RequestDetail | null>(null);
-
     const [processes, setProcesses] = useState<OrderProcess[]>([]);
 
-    const fetchRequestDetail = async (reqId: number) => {
-        setSelectedRequestId(reqId);
+    const fetchRequestDetail = useCallback(
+        async (reqId: number) => {
+            try {
+                const res = await fetch(
+                    `${baseUrl}/kiosk/sewing/${reqId}?line=${line}`
+                );
+                const result = await res.json();
 
-        try {
-            const res = await fetch(
-                `${baseUrl}/kiosk/sewing/${reqId}?line=${line}`
-            );
-            const result = await res.json();
+                if (result.status === "error") {
+                    toast.warning(result.errors);
+                    setSelectedRequest(null);
+                    return;
+                }
 
-            if (result.status === "error") {
-                toast.warning(result.errors);
-                setSelectedRequest(null);
-                return;
+                const detail = result.data;
+                detail.defect_summary ??= {};
+                detail.process_summary ??= {};
+                setSelectedRequest(detail);
+                setProcesses(detail.order_process);
+            } catch (error: unknown) {
+                const err = error as Error;
+                toast.error(err.message);
             }
+        },
+        [baseUrl, line]
+    );
 
-            const detail = result.data;
-            detail.defect_summary ??= {};
-            detail.process_summary ??= {};
-            setSelectedRequest(detail);
-            setProcesses(detail.order_process);
-        } catch (error: unknown) {
-            const err = error as Error;
-            toast.error(err.message);
-        }
+    const selectRequest = (reqId: number) => {
+        setSelectedRequestId(reqId);
+        fetchRequestDetail(reqId);
     };
+
+    useEffect(() => {
+        if (!selectedRequestId) return;
+
+        const interval = setInterval(() => {
+            fetchRequestDetail(selectedRequestId);
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [selectedRequestId, fetchRequestDetail]);
 
     return {
         selectedRequestId,
         selectedRequest,
-        fetchRequestDetail,
+        selectRequest,
         processes,
     };
 };
