@@ -36,7 +36,7 @@ export default function RequestListPanel({
     requestId,
     refetchSignal,
 }: Props) {
-    const [line, setLine] = useState();
+    const [line, setLine] = useState<string>();
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -44,7 +44,7 @@ export default function RequestListPanel({
         setLine(line);
     }, []);
 
-    const { requests } = useRequestList(line, refetchSignal);
+    const { requests } = useRequestList(line ?? "1", refetchSignal);
 
     return (
         <div className="py-1 overflow-y-auto h-[calc(100vh-64px)]">
