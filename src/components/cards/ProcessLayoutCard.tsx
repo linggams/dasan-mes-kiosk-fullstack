@@ -81,6 +81,7 @@ export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
                                 <tr
                                     key={row.no}
                                     className="bg-white hover:bg-gray-50 transition"
+                                    style={{ backgroundColor: row.highlight || 'white' }}
                                 >
                                     <td className="px-3 py-2 border border-gray-300">
                                         {row.no}

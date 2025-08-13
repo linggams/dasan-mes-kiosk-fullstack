@@ -50,6 +50,7 @@ export type ProcessLayout = {
     standardTime: string;
     video?: string;
     manPower: string;
+    highlight: string;
 };
 
 export type OrderProcess = {

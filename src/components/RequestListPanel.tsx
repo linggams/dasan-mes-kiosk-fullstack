@@ -36,7 +36,7 @@ export default function RequestListPanel({
     requestId,
     refetchSignal,
 }: Props) {
-    const [line, setLine] = useState("1");
+    const [line, setLine] = useState();
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
