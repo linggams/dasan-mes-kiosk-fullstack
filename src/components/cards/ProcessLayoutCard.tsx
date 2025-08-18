@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Youtube } from "lucide-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import YouTube from "react-youtube";
 import { ProcessLayout } from "@/types/request";
 
@@ -17,8 +12,6 @@ interface ProcessLayoutCardProps {
 export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    console.log(data)
 
     const openModal = (url: string) => {
         setVideoUrl(url);
@@ -81,7 +74,10 @@ export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
                                 <tr
                                     key={row.no}
                                     className="bg-white hover:bg-gray-50 transition"
-                                    style={{ backgroundColor: row.highlight || 'white' }}
+                                    style={{
+                                        backgroundColor:
+                                            row.highlight || "white",
+                                    }}
                                 >
                                     <td className="px-3 py-2 border border-gray-300">
                                         {row.no}
@@ -128,15 +124,9 @@ export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
             </Card>
 
             <Dialog open={isModalOpen} onOpenChange={closeModal}>
-                <DialogContent
-                    className="w-full max-w-6xl h-[90vh] max-h-[90vh] z-[9999] bg-white overflow-hidden"
-                    style={{ padding: 0 }}
-                >
-                    <DialogHeader className="p-4 border-b">
-                        <DialogTitle>Video Preview</DialogTitle>
-                    </DialogHeader>
+                <DialogContent className="p-0 z-[9999] bg-white w-auto max-w-none h-auto max-h-none m-auto">
                     {videoUrl && (
-                        <div className="aspect-video">
+                        <div className="aspect-video w-[900px]">
                             <YouTube
                                 videoId={getYoutubeId(videoUrl) ?? ""}
                                 className="w-full h-full"
