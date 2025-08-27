@@ -49,7 +49,7 @@ export default function RequestModal({
             className={`fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50"
              ${open ? "flex" : "hidden"} `}
         >
-            <div className="z-50 bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4">
+            <div className="z-50 bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4">
                 <div className="p-8 relative">
                     <button
                         className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
@@ -134,12 +134,20 @@ export default function RequestModal({
                                 />
                             </div>
 
-                            <div className="mt-8 flex gap-4">
+                            <div className="mt-8 flex justify-end gap-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="rounded-lg font-medium"
+                                    onClick={onClose}
+                                >
+                                    Cancel
+                                </Button>
                                 <Button
                                     type="submit"
-                                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors font-medium"
+                                    className=" text-white rounded-lg transition-colors font-medium"
                                 >
-                                    Submit Request
+                                    Create Request
                                 </Button>
                             </div>
                         </form>

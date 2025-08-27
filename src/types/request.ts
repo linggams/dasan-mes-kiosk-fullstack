@@ -1,5 +1,6 @@
 export type Request = {
     id: number;
+    order_code: string;
     code: string;
     status: string;
     buyer: string;

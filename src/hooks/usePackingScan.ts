@@ -1,65 +1,65 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { QRData } from "@/types/qr";
-import {ProductionData} from "@/types/request";
+import { ProductionData } from "@/types/request";
+import { kiosk } from "@/lib/axios";
 
 type UsePackingScanProps = {
-    baseUrl: string;
     packing: string;
 };
 
-export const usePackingScan = ({ baseUrl, packing }: UsePackingScanProps) => {
+export const usePackingScan = ({ packing }: UsePackingScanProps) => {
     const [count, setCount] = useState(0);
     const [qrPackingData, setQrPackingData] = useState<QRData | undefined>();
     const [imagePreview, setImagePreview] = useState("");
-    const [productionData, setProductionData] = useState<ProductionData | undefined>();
+    const [productionData, setProductionData] = useState<
+        ProductionData | undefined
+    >();
 
     const handlePackingScan = async (qrCode: string) => {
         if (!qrCode.trim()) return;
 
         try {
-            const res = await fetch(`${baseUrl}/kiosk/packing/scan?packing=${packing}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
+            const result = await kiosk.post(
+                `/packing/scan?packing=${packing}`,
+                {
                     qr_code: qrCode.trim(),
-                }),
-            });
+                }
+            );
 
-            const result = await res.json();
+            // if (!res.ok) {
+            //     const errorMsg = Array.isArray(result.errors)
+            //         ? result.errors.join(", ")
+            //         : result.errors || "Unknown error";
+            //     toast.warning(errorMsg);
+            //     return;
+            // }
 
-            if (!res.ok) {
-                const errorMsg = Array.isArray(result.errors)
-                    ? result.errors.join(", ")
-                    : result.errors || "Unknown error";
-                toast.warning(errorMsg);
-                return;
-            }
-
-            const data = result.data.qrData;
-            const imagePreview = result.data.imagePreview;
-            const counting = result.data.counting;
-            const productionData = result.data.productionData;
+            const { qrData, imagePreview, counting, productionData } =
+                result.data;
 
             const scannedData: QRData = {
-                buyer: data.buyer_name,
-                style: data.style,
-                size: data.size,
-                color: data.color,
-                purchaseOrder: data.purchase_order,
-                destination: data.destination,
-                qrNumber: data.qr_number,
+                buyer: qrData.buyer,
+                style: qrData.style,
+                size: qrData.size,
+                color: qrData.color,
+                purchaseOrder: qrData.purchase_order,
+                destination: qrData.destination,
+                qrNumber: qrData.qr_number,
             };
 
             setImagePreview(imagePreview);
             setQrPackingData(scannedData);
             setProductionData(productionData);
             setCount(counting);
-        } catch (err: unknown) {
-            const error = err as Error;
-            toast.error(error.message);
+        } catch (err: any) {
+            const errorMsg =
+                err.response?.data?.errors ??
+                err.message ??
+                "Unknown error occurred";
+            toast.error(
+                Array.isArray(errorMsg) ? errorMsg.join(", ") : errorMsg
+            );
         }
     };
 

@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { MasterDefectType } from "@/hooks/useMasterData";
 import { OrderProcess } from "@/types/request";
+import { kiosk } from "@/lib/axios";
 
 type Props = {
     requestId?: number | null;
@@ -30,7 +31,6 @@ export default function QrScanInput({
     processes,
     isSidebarOpen,
 }: Props) {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
     const [line, setLine] = useState("1");
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -60,32 +60,12 @@ export default function QrScanInput({
         if (!searchQuery.trim() || !requestId) return;
 
         try {
-            const res = await fetch(
-                `${baseUrl}/kiosk/sewing/scan?line=${line}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        request_id: requestId,
-                        qr_code: searchQuery.trim(),
-                    }),
-                }
-            );
+            const res = await kiosk.post(`/sewing/scan?line=${line}`, {
+                request_id: requestId,
+                qr_code: searchQuery.trim(),
+            });
 
-            const result = await res.json();
-            if (!res.ok) {
-                const errorMsg = Array.isArray(result.errors)
-                    ? result.errors.join(", ")
-                    : result.errors || "Unknown error";
-                toast.warning(errorMsg);
-                setSearchQuery("");
-                return;
-            }
-
-            const data = result.data;
-
+            const data = res.data;
             const scannedData: QRData = {
                 buyer: data.buyer,
                 style: data.style,
@@ -101,10 +81,16 @@ export default function QrScanInput({
             setQrData(scannedData);
             setIsQrModalOpen(true);
             setSearchQuery("");
-        } catch (err: unknown) {
-            const error = err as Error;
-            toast.error(error.message);
-            setSearchQuery("");
+        } catch (err: any) {
+            if (err.response) {
+                toast.warning(
+                    err.response.data.message || "Something went wrong"
+                );
+            } else if (err.request) {
+                toast.error("No response from server");
+            } else {
+                toast.error(err.message);
+            }
         }
     };
 
@@ -112,23 +98,14 @@ export default function QrScanInput({
         if (!requestId || !qrData?.qrNumber) return;
 
         try {
-            const res = await fetch(
-                `${baseUrl}/kiosk/sewing/pass?line=${line}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        request_id: requestId,
-                        qr_code: qrData?.qrNumber,
-                    }),
-                }
-            );
+            const res = await kiosk.post(`/sewing/pass?line=${line}`, {
+                request_id: requestId,
+                qr_code: qrData.qrNumber,
+            });
 
-            const result = await res.json();
-            if (!res.ok) {
-                toast.error(result.message);
+            const result = res.data;
+            if (result.status === "error") {
+                toast.error(result.message || "Something went wrong");
                 return;
             }
 
@@ -136,9 +113,16 @@ export default function QrScanInput({
             setIsQrModalOpen(false);
             setSearchQuery("");
             //fetchRequestDetail(requestId);
-        } catch (err: unknown) {
-            const error = err as Error;
-            toast.error(error.message);
+        } catch (err: any) {
+            if (err.response) {
+                toast.warning(
+                    err.response.data.message || "Something went wrong"
+                );
+            } else if (err.request) {
+                toast.error("No response from server");
+            } else {
+                toast.error(err.message);
+            }
             setSearchQuery("");
         }
     };
@@ -165,28 +149,20 @@ export default function QrScanInput({
         if (!requestId || !qrData?.qrNumber) return;
 
         try {
-            const res = await fetch(
-                `${baseUrl}/kiosk/sewing/fail?line=${line}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        request_id: requestId,
-                        qr_code: qrData.qrNumber,
-                        defects: selectedDefects.map((d) => ({
-                            key: d.key,
-                            processes: defectProcessMap[d.key] || [],
-                        })),
-                        is_rework: isRework,
-                    }),
-                }
-            );
+            const res = await kiosk.post(`/sewing/fail?line=${line}`, {
+                request_id: requestId,
+                qr_code: qrData.qrNumber,
+                defects: selectedDefects.map((d) => ({
+                    key: d.key,
+                    processes: defectProcessMap[d.key] || [],
+                })),
+                is_rework: isRework,
+            });
 
-            const result = await res.json();
-            if (!res.ok) {
-                toast.error(result.message);
+            const result = res.data;
+
+            if (result.status === "error") {
+                toast.error(result.message || "Something went wrong");
                 return;
             }
 
@@ -198,9 +174,16 @@ export default function QrScanInput({
             setDefectProcessMap({});
             setQrData(null);
             setSearchQuery("");
-        } catch (err: unknown) {
-            const error = err as Error;
-            toast.error(error.message);
+        } catch (err: any) {
+            if (err.response) {
+                toast.warning(
+                    err.response.data.message || "Something went wrong"
+                );
+            } else if (err.request) {
+                toast.error("No response from server");
+            } else {
+                toast.error(err.message);
+            }
             setSearchQuery("");
         } finally {
             setSelectedDefects([]);

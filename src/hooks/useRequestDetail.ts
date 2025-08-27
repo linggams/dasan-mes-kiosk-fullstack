@@ -7,6 +7,7 @@ import {
     OrderProcess,
 } from "@/types/request";
 import { ManPower, OrderInfo } from "@/types/order";
+import { kiosk } from "@/lib/axios";
 
 export type RequestDetail = {
     request_info: RequestData;
@@ -26,7 +27,7 @@ export type RequestDetail = {
     order_process?: OrderProcess[];
 };
 
-export const useRequestDetail = (baseUrl: string, line: string) => {
+export const useRequestDetail = (line: string) => {
     const [selectedRequestId, setSelectedRequestId] = useState<number | null>(
         null
     );
@@ -37,10 +38,8 @@ export const useRequestDetail = (baseUrl: string, line: string) => {
     const fetchRequestDetail = useCallback(
         async (reqId: number) => {
             try {
-                const res = await fetch(
-                    `${baseUrl}/kiosk/sewing/${reqId}?line=${line}`
-                );
-                const result = await res.json();
+                const res = await kiosk.get(`/sewing/${reqId}?line=${line}`);
+                const result = res.data;
 
                 if (result.status === "error") {
                     toast.warning(result.errors);
@@ -48,17 +47,24 @@ export const useRequestDetail = (baseUrl: string, line: string) => {
                     return;
                 }
 
-                const detail = result.data;
-                detail.defect_summary ??= {};
-                detail.process_summary ??= {};
-                setSelectedRequest(detail);
-                setProcesses(detail.order_process);
-            } catch (error: unknown) {
-                const err = error as Error;
-                toast.error(err.message);
+                // const detail = result.data;
+                result.defect_summary ??= {};
+                result.process_summary ??= {};
+                setSelectedRequest(result);
+                setProcesses(result.order_process);
+            } catch (err: any) {
+                if (err.response) {
+                    toast.warning(
+                        err.response.data.errors || "Something went wrong"
+                    );
+                } else if (err.request) {
+                    toast.error("No response from server");
+                } else {
+                    toast.error(err.message);
+                }
             }
         },
-        [baseUrl, line]
+        [line]
     );
 
     const selectRequest = (reqId: number) => {

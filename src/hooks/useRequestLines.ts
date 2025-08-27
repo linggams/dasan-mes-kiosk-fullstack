@@ -1,72 +1,54 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { LineInfoTypes, ProductionData } from "@/types/request";
-import { OrderInfo } from "@/types/order";
-import { format } from "date-fns";
-
-export type RequestLinesTypes = {
-  line_info: LineInfoTypes;
-  order_info: OrderInfo & {
-    defect: number;
-    man_power: number;
-  };
-  production_data: ProductionData;
-};
+import { RequestLinesTypes } from "@/types/lines";
+import { kiosk } from "@/lib/axios";
+import { ApiResponse } from "@/types/response";
 
 export const useRequestLines = (
-  baseUrl: string,
-  selectedFactory: string,
-  currentDate: Date | undefined
+    selectedFactory: string,
+    currentDate: Date | undefined
 ) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [selectedRequestLines, setSelectedRequestLines] = useState<
-    Array<RequestLinesTypes> | []
-  >([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [selectedRequestLines, setSelectedRequestLines] = useState<
+        Array<RequestLinesTypes>
+    >([]);
 
-  const fetchRequestLines = useCallback(async () => {
-    const parseSelectedFactory = selectedFactory
-      ? JSON.parse(selectedFactory)
-      : null;
-    const factoryQuery = parseSelectedFactory
-      ? `?factory=${parseSelectedFactory.id}`
-      : "";
-    const requestDate =
-      currentDate && factoryQuery
-        ? `&request_date=${format(currentDate, "yyyy-MM-dd")}`
-        : currentDate
-        ? `?request_date=${format(currentDate, "yyyy-MM-dd")}`
-        : "";
+    const fetchRequestLines = useCallback(async () => {
+        const parseSelectedFactory = selectedFactory
+            ? JSON.parse(selectedFactory)
+            : null;
+        const factoryQuery = parseSelectedFactory
+            ? `?factory=${parseSelectedFactory.id}`
+            : "";
 
-    setIsLoading(true);
+        setIsLoading(true);
 
-    try {
-      const res = await fetch(
-        `${baseUrl}/kiosk/lines${factoryQuery}${requestDate}`
-      );
-      const result = await res.json();
+        try {
+            const result = await kiosk.get<ApiResponse<RequestLinesTypes[]>>(
+                `/lines${factoryQuery}`
+            );
 
-      if (result.status === "error") {
-        toast.warning(result.errors);
-        setSelectedRequestLines([]);
-        return;
-      }
+            if (result.status !== "success") {
+                toast.warning(result.message || "Failed to fetch lines");
+                setSelectedRequestLines([]);
+                return;
+            }
 
-      const lines = result.data;
-      setSelectedRequestLines(lines);
-    } catch (error: unknown) {
-      const err = error as Error;
-      toast.error(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [baseUrl, selectedFactory, currentDate]);
+            setSelectedRequestLines(result.data ?? []);
+        } catch (error: unknown) {
+            const err = error as Error;
+            toast.error(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [selectedFactory, currentDate]);
 
-  useEffect(() => {
-    fetchRequestLines();
-  }, [fetchRequestLines]);
+    useEffect(() => {
+        fetchRequestLines();
+    }, [fetchRequestLines]);
 
-  return {
-    selectedRequestLines,
-    isLoading,
-  };
+    return {
+        selectedRequestLines,
+        isLoading,
+    };
 };

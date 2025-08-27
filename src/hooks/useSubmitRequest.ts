@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { RequestFormData } from "@/types/request";
+import { kiosk } from "@/lib/axios";
 
 type UseSubmitRequestProps<T> = {
-    baseUrl: string;
     line: string;
     defaultFormData: T;
 };
 
 export const useSubmitRequest = <T extends Record<string, unknown>>({
-    baseUrl,
     line,
     defaultFormData,
 }: UseSubmitRequestProps<T>) => {
@@ -26,27 +25,31 @@ export const useSubmitRequest = <T extends Record<string, unknown>>({
         e.preventDefault();
 
         try {
-            const res = await fetch(`${baseUrl}/kiosk/sewing?line=${line}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-                mode: "cors",
-            });
+            const res = await kiosk.post(`/sewing?line=${line}`, formData);
 
-            const result = await res.json();
+            const result = res.data;
 
-            if (!res.ok) {
-                toast.warning(result.errors || result.message);
-                return;
-            }
+            // if (res.status === "error") {
+            //     toast.warning(
+            //         res.errors || res.message || "Something went wrong"
+            //     );
+            //     return;
+            // }
 
-            toast.success(result.message);
+            toast.success(res.message);
             setIsRequestModalOpen(false);
             setRefetchSignal((prev) => !prev);
             setFormData(defaultFormData);
-        } catch (err: unknown) {
-            const error = err as Error;
-            toast.error(error.message);
+        } catch (err: any) {
+            if (err.response) {
+                toast.warning(
+                    err.response.data.message || "Something went wrong"
+                );
+            } else if (err.request) {
+                toast.error("No response from server");
+            } else {
+                toast.error(err.message);
+            }
         }
     };
 

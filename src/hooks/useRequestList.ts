@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Request } from "@/types/request";
+import { kiosk } from "@/lib/axios";
 
 export function useRequestList(line: string, refetchSignal?: unknown) {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
     const [requests, setRequests] = useState<Request[]>([]);
 
     const fetchRequests = useCallback(async () => {
         try {
-            const res = await fetch(`${baseUrl}/kiosk/sewing?line=${line}`);
-            const data = await res.json();
-            setRequests(data.data);
+            const res = await kiosk.get(`/sewing?line=${line}`);
+            const data = await res.data;
+            setRequests(data);
         } catch (err: unknown) {
             const error = err as Error;
             toast.error(error.message || "Failed to fetch requests");
         }
-    }, [baseUrl, line]);
+    }, [line]);
 
     useEffect(() => {
         fetchRequests();
