@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { RequestLinesTypes } from "@/hooks/useRequestLines";
+import { RequestLinesTypes } from "@/types/lines";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

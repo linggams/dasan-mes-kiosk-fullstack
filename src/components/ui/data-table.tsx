@@ -14,11 +14,11 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-import * as XLSX from "xlsx";
 
 import { exportToExcel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RequestLinesTypes } from "@/types/lines";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -97,7 +97,9 @@ export function DataTable<TData, TValue>({
                     <Button
                         variant="outline"
                         className="mr-2"
-                        onClick={() => exportToExcel(data)}
+                        onClick={() =>
+                            exportToExcel(data as RequestLinesTypes[])
+                        }
                     >
                         Export
                     </Button>

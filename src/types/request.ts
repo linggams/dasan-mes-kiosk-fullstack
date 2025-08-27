@@ -49,6 +49,7 @@ export type ProcessLayout = {
     classType: string;
     tooling: string;
     standardTime: string;
+    actualTime?: string;
     video?: string;
     manPower: string;
     highlight: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { RefreshCw, ArrowUpDown } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
@@ -18,7 +18,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { FactoryTypes } from "@/types/request";
-import { useRequestLines, RequestLinesTypes } from "@/hooks/useRequestLines";
+import { RequestLinesTypes } from "@/types/lines";
+import { useRequestLines } from "@/hooks/useRequestLines";
 import { master } from "@/lib/axios";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
@@ -31,9 +32,9 @@ export default function MonitoringLine() {
         new Date()
     );
 
-    const { selectedRequestLines, isLoading } = useRequestLines(
+    const { selectedRequestLines } = useRequestLines(
         selectedFactory,
-        new Date()
+        currentDate
     );
 
     useEffect(() => {

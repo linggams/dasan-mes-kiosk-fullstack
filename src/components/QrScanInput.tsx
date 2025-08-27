@@ -81,15 +81,11 @@ export default function QrScanInput({
             setQrData(scannedData);
             setIsQrModalOpen(true);
             setSearchQuery("");
-        } catch (err: any) {
-            if (err.response) {
-                toast.warning(
-                    err.response.data.message || "Something went wrong"
-                );
-            } else if (err.request) {
-                toast.error("No response from server");
-            } else {
+        } catch (err: unknown) {
+            if (err instanceof Error) {
                 toast.error(err.message);
+            } else {
+                toast.error("Unexpected error occurred");
             }
         }
     };
@@ -113,17 +109,12 @@ export default function QrScanInput({
             setIsQrModalOpen(false);
             setSearchQuery("");
             //fetchRequestDetail(requestId);
-        } catch (err: any) {
-            if (err.response) {
-                toast.warning(
-                    err.response.data.message || "Something went wrong"
-                );
-            } else if (err.request) {
-                toast.error("No response from server");
-            } else {
+        } catch (err: unknown) {
+            if (err instanceof Error) {
                 toast.error(err.message);
+            } else {
+                toast.error("Unexpected error occurred");
             }
-            setSearchQuery("");
         }
     };
 
@@ -174,15 +165,11 @@ export default function QrScanInput({
             setDefectProcessMap({});
             setQrData(null);
             setSearchQuery("");
-        } catch (err: any) {
-            if (err.response) {
-                toast.warning(
-                    err.response.data.message || "Something went wrong"
-                );
-            } else if (err.request) {
-                toast.error("No response from server");
-            } else {
+        } catch (err: unknown) {
+            if (err instanceof Error) {
                 toast.error(err.message);
+            } else {
+                toast.error("Unexpected error occurred");
             }
             setSearchQuery("");
         } finally {

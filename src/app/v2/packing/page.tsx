@@ -1,7 +1,6 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useRef, useEffect } from "react";
 import { usePackingScan } from "@/hooks/usePackingScan";
@@ -104,15 +103,10 @@ export default function Dashboard() {
         };
     }, []);
 
-    const {
-        count,
-        qrPackingData,
-        imagePreview,
-        productionData,
-        handlePackingScan,
-    } = usePackingScan({
-        packing: packing,
-    });
+    const { count, qrPackingData, imagePreview, handlePackingScan } =
+        usePackingScan({
+            packing: packing,
+        });
 
     const onEnterQr = async (qrValue: string) => {
         const cleanQrValue = qrValue.trim().toUpperCase();
@@ -122,8 +116,12 @@ export default function Dashboard() {
 
         try {
             await handlePackingScan(cleanQrValue);
-        } catch (err: any) {
-            setErrorMessage(err.message ?? "Unknown error");
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setErrorMessage(err.message);
+            } else {
+                setErrorMessage("Unknown error");
+            }
         } finally {
             setQrInputValue("");
             setIsProcessing(false);

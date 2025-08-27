@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import LineDataCard from "@/components/cards/LineDataCard";
 import { useRequestLines } from "@/hooks/useRequestLines";
 import { FactoryTypes } from "@/types/request";
-import { CalendarIcon, LoaderCircle, RefreshCw } from "lucide-react";
+import { CalendarIcon, RefreshCw } from "lucide-react";
 import { master } from "@/lib/axios";
 import {
     Popover,
@@ -28,7 +28,7 @@ export default function LinePage() {
         new Date()
     );
 
-    const { isLoading, selectedRequestLines } = useRequestLines(
+    const { selectedRequestLines } = useRequestLines(
         selectedFactory,
         currentDate
     );
@@ -129,11 +129,7 @@ export default function LinePage() {
 
             <section className="mx-auto mt-4 xl:max-w-[100rem] max-w-4xl">
                 <div className="grid grid-cols-1 gap-8">
-                    {isLoading ? (
-                        <div className="flex items-center justify-center h-64">
-                            <LoaderCircle className="text-gray-500 size-8 animate-spin" />
-                        </div>
-                    ) : selectedRequestLines.length > 0 ? (
+                    {selectedRequestLines.length > 0 ? (
                         selectedRequestLines.map((lines, idx: number) => (
                             <LineDataCard
                                 key={lines.line_info.line + idx}

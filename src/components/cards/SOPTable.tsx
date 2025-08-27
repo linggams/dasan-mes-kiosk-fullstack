@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
     Table,
     TableBody,
@@ -17,12 +16,9 @@ type SOP = {
 
 interface SOPTableProps {
     sopData: SOP[];
-    onSelect: (sop: SOP) => void;
 }
 
-export default function SOPTable({ sopData, onSelect }: SOPTableProps) {
-    const [selectedId, setSelectedId] = useState<number | null>(null);
-
+export default function SOPTable({ sopData }: SOPTableProps) {
     return (
         <div className="space-y-4">
             <div className="rounded-md border">
@@ -43,15 +39,7 @@ export default function SOPTable({ sopData, onSelect }: SOPTableProps) {
                             sopData.map((sop) => (
                                 <TableRow
                                     key={sop.id}
-                                    className={`cursor-pointer transition-colors ${
-                                        selectedId === sop.id
-                                            ? "bg-blue-50"
-                                            : "hover:bg-gray-50"
-                                    }`}
-                                    onClick={() => {
-                                        setSelectedId(sop.id);
-                                        onSelect(sop);
-                                    }}
+                                    className={`cursor-pointer transition-colors`}
                                 >
                                     <TableCell className="font-medium">
                                         {sop.title}

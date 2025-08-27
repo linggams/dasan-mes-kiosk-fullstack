@@ -52,14 +52,12 @@ export const usePackingScan = ({ packing }: UsePackingScanProps) => {
             setQrPackingData(scannedData);
             setProductionData(productionData);
             setCount(counting);
-        } catch (err: any) {
-            const errorMsg =
-                err.response?.data?.errors ??
-                err.message ??
-                "Unknown error occurred";
-            toast.error(
-                Array.isArray(errorMsg) ? errorMsg.join(", ") : errorMsg
-            );
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                toast.error(err.message);
+            } else {
+                toast.error("Unexpected error occurred");
+            }
         }
     };
 

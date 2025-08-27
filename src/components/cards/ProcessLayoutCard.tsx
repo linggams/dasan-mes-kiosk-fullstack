@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Youtube } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import YouTube from "react-youtube";
 import { ProcessLayout } from "@/types/request";
@@ -198,7 +197,9 @@ export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
                                                     size="sm"
                                                     className="p-2 h-10 w-10"
                                                     onClick={() =>
-                                                        openModal(row.video)
+                                                        openModal(
+                                                            row.video ?? "-"
+                                                        )
                                                     }
                                                 >
                                                     <svg

@@ -6,11 +6,11 @@ import { ApiResponse } from "@/types/response";
 
 export const useRequestLines = (
     selectedFactory: string,
-    currentDate: Date | undefined
+    currentDate?: Date
 ) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    // const [isLoading, setIsLoading] = useState(false);
     const [selectedRequestLines, setSelectedRequestLines] = useState<
-        Array<RequestLinesTypes>
+        RequestLinesTypes[]
     >([]);
 
     const fetchRequestLines = useCallback(async () => {
@@ -21,25 +21,27 @@ export const useRequestLines = (
             ? `?factory=${parseSelectedFactory.id}`
             : "";
 
-        setIsLoading(true);
+        const dateQuery = currentDate
+            ? `&date=${currentDate.toISOString().split("T")[0]}`
+            : "";
+
+        // setIsLoading(true);
 
         try {
             const result = await kiosk.get<ApiResponse<RequestLinesTypes[]>>(
-                `/lines${factoryQuery}`
+                `/lines${factoryQuery}${dateQuery}`
             );
 
-            if (result.status !== "success") {
-                toast.warning(result.message || "Failed to fetch lines");
-                setSelectedRequestLines([]);
-                return;
-            }
+            // if (result.status !== "success") {
+            //     toast.warning(result.message || "Failed to fetch lines");
+            //     setSelectedRequestLines([]);
+            //     return;
+            // }
 
-            setSelectedRequestLines(result.data ?? []);
+            setSelectedRequestLines(result.data.data ?? []);
         } catch (error: unknown) {
             const err = error as Error;
             toast.error(err.message);
-        } finally {
-            setIsLoading(false);
         }
     }, [selectedFactory, currentDate]);
 
@@ -47,8 +49,5 @@ export const useRequestLines = (
         fetchRequestLines();
     }, [fetchRequestLines]);
 
-    return {
-        selectedRequestLines,
-        isLoading,
-    };
+    return { selectedRequestLines };
 };

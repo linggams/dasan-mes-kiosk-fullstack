@@ -9,6 +9,13 @@ import {
 import { ManPower, OrderInfo } from "@/types/order";
 import { kiosk } from "@/lib/axios";
 
+type SOP = {
+    id: number;
+    title: string;
+    created_at: string;
+    updated_at: string | null;
+};
+
 export type RequestDetail = {
     request_info: RequestData;
     image_preview: string;
@@ -25,6 +32,7 @@ export type RequestDetail = {
     production_data: ProductionData;
     process_layout?: ProcessLayout[];
     order_process?: OrderProcess[];
+    sop_data?: SOP[];
 };
 
 export const useRequestDetail = (line: string) => {
@@ -52,15 +60,11 @@ export const useRequestDetail = (line: string) => {
                 result.process_summary ??= {};
                 setSelectedRequest(result);
                 setProcesses(result.order_process);
-            } catch (err: any) {
-                if (err.response) {
-                    toast.warning(
-                        err.response.data.errors || "Something went wrong"
-                    );
-                } else if (err.request) {
-                    toast.error("No response from server");
-                } else {
+            } catch (err: unknown) {
+                if (err instanceof Error) {
                     toast.error(err.message);
+                } else {
+                    toast.error("Unexpected error occurred");
                 }
             }
         },

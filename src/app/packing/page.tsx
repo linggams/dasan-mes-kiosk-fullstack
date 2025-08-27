@@ -10,8 +10,6 @@ import ProductionDataCard from "@/components/cards/ProductionDataCard";
 import { usePackingScan } from "@/hooks/usePackingScan";
 
 export default function PackingPage() {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
-
     const [packing, setPacking] = useState("1");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
@@ -58,7 +56,7 @@ export default function PackingPage() {
         imagePreview,
         productionData,
         handlePackingScan,
-    } = usePackingScan({ baseUrl, packing });
+    } = usePackingScan({ packing });
 
     return (
         <div className="min-h-screen p-6 bg-gray-100 space-y-6 select-none">

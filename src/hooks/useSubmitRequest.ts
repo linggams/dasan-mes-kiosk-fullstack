@@ -36,19 +36,15 @@ export const useSubmitRequest = <T extends Record<string, unknown>>({
             //     return;
             // }
 
-            toast.success(res.message);
+            toast.success(result.message ?? "Request submitted");
             setIsRequestModalOpen(false);
             setRefetchSignal((prev) => !prev);
             setFormData(defaultFormData);
-        } catch (err: any) {
-            if (err.response) {
-                toast.warning(
-                    err.response.data.message || "Something went wrong"
-                );
-            } else if (err.request) {
-                toast.error("No response from server");
-            } else {
+        } catch (err: unknown) {
+            if (err instanceof Error) {
                 toast.error(err.message);
+            } else {
+                toast.error("Unexpected error occurred");
             }
         }
     };

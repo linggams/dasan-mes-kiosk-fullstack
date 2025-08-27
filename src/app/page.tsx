@@ -24,8 +24,6 @@ import { useUpdateStage } from "@/hooks/useUpdateStage";
 // import { getOverlappingDaysInIntervals } from "date-fns";
 
 export default function SewingPage() {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
-
     const [line, setLine] = useState("1");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
@@ -82,7 +80,7 @@ export default function SewingPage() {
         setIsRequestModalOpen,
         refetchSignal,
         handleSubmit,
-    } = useSubmitRequest({ baseUrl, line, defaultFormData });
+    } = useSubmitRequest({ line, defaultFormData });
 
     const {
         cuttings,
@@ -91,16 +89,12 @@ export default function SewingPage() {
         supervisors,
         defectTypes,
         loading,
-    } = useMasterData(
-        baseUrl
-        // formData.buyer_id
-    );
+    } = useMasterData();
 
     const { selectedRequestId, selectedRequest, selectRequest, processes } =
-        useRequestDetail(baseUrl, line);
+        useRequestDetail(line);
 
     const { updateStage } = useUpdateStage({
-        baseUrl,
         line,
         selectedQrCode,
         selectedRequestId,

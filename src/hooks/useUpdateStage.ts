@@ -1,18 +1,16 @@
 import { toast } from "sonner";
 
 type UseUpdateStageProps = {
-    baseUrl: string;
     line: string;
     selectedQrCode?: string | null;
     selectedRequestId?: number | null;
 };
 
 export const useUpdateStage = ({
-                                   baseUrl,
-                                   line,
-                                   selectedQrCode,
-                                   selectedRequestId,
-                               }: UseUpdateStageProps) => {
+    line,
+    selectedQrCode,
+    selectedRequestId,
+}: UseUpdateStageProps) => {
     const updateStage = async (stage: string) => {
         if (!selectedQrCode || !selectedRequestId) {
             toast.error("Please scan the QR code first!");
@@ -20,17 +18,20 @@ export const useUpdateStage = ({
         }
 
         try {
-            const res = await fetch(`${baseUrl}/kiosk/sewing/stage?line=${line}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    request_id: selectedRequestId,
-                    qr_code: selectedQrCode,
-                    stage,
-                }),
-            });
+            const res = await fetch(
+                `/kiosk/sewing/stage?line=${line}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        request_id: selectedRequestId,
+                        qr_code: selectedQrCode,
+                        stage,
+                    }),
+                }
+            );
 
             const result = await res.json();
             if (!res.ok) throw new Error(result.errors);

@@ -24,8 +24,6 @@ import { useUpdateStage } from "@/hooks/useUpdateStage";
 // import { getOverlappingDaysInIntervals } from "date-fns";
 
 export default function SewingPage() {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`;
-
     const [line, setLine] = useState("1");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
@@ -97,7 +95,6 @@ export default function SewingPage() {
         useRequestDetail(line);
 
     const { updateStage } = useUpdateStage({
-        baseUrl,
         line,
         selectedQrCode,
         selectedRequestId,
