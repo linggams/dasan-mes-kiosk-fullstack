@@ -7,6 +7,7 @@ const hostname =
         "http://",
         ""
     ) ?? "";
+const port = `${process.env.NEXT_PUBLIC_API_BASE_PORT}`;
 const destination = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/:path*`;
 
 const nextConfig: NextConfig = {
@@ -14,8 +15,8 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 protocol: protocol,
-                hostname: "127.0.0.1",
-                port: "8000",
+                hostname: hostname,
+                port: port,
                 pathname: "/storage/**",
             },
         ],
