@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { PieChart } from "@/components/ui/pie-chart";
-import ImagePreviewCard from "@/components/cards/ImagePreviewCard";
 import { cn } from "@/lib/utils";
 
 interface OrderInfo {
