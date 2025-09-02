@@ -2,21 +2,27 @@ import type { NextConfig } from "next";
 
 const protocol =
     process.env.NEXT_PUBLIC_API_PROTOCOL === "https" ? "https" : "http";
-const hostname =
-    process.env.NEXT_PUBLIC_API_BASE_URL?.replace("https://", "").replace(
-        "http://",
-        ""
-    ) ?? "";
-const port = `${process.env.NEXT_PUBLIC_API_BASE_PORT}`;
-const destination = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/:path*`;
+
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? ""; // e.g. http://127.0.0.1:8000
+
+// Strip protocol first
+const withoutProtocol = baseUrl.replace(/^https?:\/\//, "");
+
+// Extract hostname and port
+const [rawHost, rawPort] = withoutProtocol.split(":");
+
+const hostname = rawHost || "localhost";
+const port = rawPort || process.env.NEXT_PUBLIC_API_BASE_PORT || "";
+
+const destination = `${baseUrl}/api/:path*`;
 
 const nextConfig: NextConfig = {
     images: {
         remotePatterns: [
             {
-                protocol: protocol,
-                hostname: hostname,
-                port: port,
+                protocol,
+                hostname,
+                port,
                 pathname: "/storage/**",
             },
         ],
@@ -25,7 +31,7 @@ const nextConfig: NextConfig = {
         return [
             {
                 source: "/api/:path*",
-                destination: destination,
+                destination,
             },
         ];
     },
