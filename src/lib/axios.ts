@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { toast } from "sonner";
 // import ApiResponse from "@types/response.ts";
 
 // Kiosk API
@@ -19,25 +20,40 @@ export const master = axios.create({
 
 const onResponse = <T>(response: AxiosResponse<T>) => response.data;
 const onError = (error: AxiosError) => {
-    // Default message
     let message = "Unknown API error";
 
     if (error.response) {
-        if (typeof error.response.data === "string") {
-            message = error.response.data;
-        } else if (
-            error.response.data &&
-            typeof error.response.data === "object"
-        ) {
-            const data = error.response.data as { message?: string };
-            message = data.message || JSON.stringify(data);
+        const data = error.response.data;
+
+        if (typeof data === "string") {
+            message = data;
+            toast.warning(message);
+        } else if (data && typeof data === "object") {
+            const { errors, message: msg } = data as {
+                errors?: string | string[];
+                message?: string;
+            };
+
+            if (errors) {
+                message = Array.isArray(errors) ? errors.join(", ") : errors;
+                toast.warning(message);
+            } else if (msg) {
+                message = msg;
+                toast.warning(message);
+            } else {
+                message = JSON.stringify(data);
+                toast.error(message); // fallback -> error
+            }
         } else {
             message = `Request failed with status ${error.response.status}`;
+            toast.error(message);
         }
     } else if (error.request) {
         message = "No response from server. Possible network/CORS issue.";
+        toast.error(message);
     } else {
         message = error.message;
+        toast.error(message);
     }
 
     return Promise.reject(new Error(message));

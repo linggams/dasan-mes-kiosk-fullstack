@@ -47,6 +47,7 @@ export const useRequestDetail = (line: string) => {
         async (reqId: number) => {
             try {
                 const res = await kiosk.get(`/sewing/${reqId}?line=${line}`);
+                console.log(res)
                 const result = res.data;
 
                 if (result.status === "error") {
@@ -61,11 +62,8 @@ export const useRequestDetail = (line: string) => {
                 setSelectedRequest(result);
                 setProcesses(result.order_process);
             } catch (err: unknown) {
-                if (err instanceof Error) {
-                    toast.error(err.message);
-                } else {
-                    toast.error("Unexpected error occurred");
-                }
+                console.error(err);
+                setSelectedRequest(null);
             }
         },
         [line]

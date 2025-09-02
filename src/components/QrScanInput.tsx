@@ -82,11 +82,8 @@ export default function QrScanInput({
             setIsQrModalOpen(true);
             setSearchQuery("");
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                toast.error(err.message);
-            } else {
-                toast.error("Unexpected error occurred");
-            }
+            console.log(err);
+            setSearchQuery("");
         }
     };
 
@@ -110,11 +107,8 @@ export default function QrScanInput({
             setSearchQuery("");
             //fetchRequestDetail(requestId);
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                toast.error(err.message);
-            } else {
-                toast.error("Unexpected error occurred");
-            }
+            console.log(err);
+            setSearchQuery("");
         }
     };
 
@@ -166,14 +160,11 @@ export default function QrScanInput({
             setQrData(null);
             setSearchQuery("");
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                toast.error(err.message);
-            } else {
-                toast.error("Unexpected error occurred");
-            }
+            console.log(err);
             setSearchQuery("");
         } finally {
             setSelectedDefects([]);
+            setDefectProcessMap({});
         }
     };
 
