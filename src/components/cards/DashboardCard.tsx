@@ -55,26 +55,28 @@ export default function DashboardCard({ selectedRequest }: DashboardGridProps) {
                 <Card className="flex items-center justify-center">
                     <CardContent className="p-6 w-full h-full flex flex-col items-center justify-center">
                         <div className="relative flex flex-col items-center">
-                            <PieChart
-                                data={[
-                                    {
-                                        name: "Progress",
-                                        value:
-                                            selectedRequest?.order_info
-                                                .progress_percentage || 0,
-                                        color: "#3b82f6",
-                                    },
-                                    {
-                                        name: "Remaining",
-                                        value:
-                                            100 -
-                                            (selectedRequest?.order_info
-                                                .progress_percentage || 0),
-                                        color: "#e5e7eb",
-                                    },
-                                ]}
-                                size={250}
-                            />
+                            <div className="w-[250px]">
+                                <PieChart
+                                    data={[
+                                        {
+                                            name: "Progress",
+                                            value:
+                                                selectedRequest?.order_info
+                                                    .progress_percentage || 0,
+                                            color: "#3b82f6",
+                                        },
+                                        {
+                                            name: "Remaining",
+                                            value:
+                                                100 -
+                                                (selectedRequest?.order_info
+                                                    .progress_percentage || 0),
+                                            color: "#e5e7eb",
+                                        },
+                                    ]}
+                                    size={250}
+                                />
+                            </div>
                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                                 <div className="text-5xl font-bold text-blue-600">
                                     {selectedRequest?.order_info
