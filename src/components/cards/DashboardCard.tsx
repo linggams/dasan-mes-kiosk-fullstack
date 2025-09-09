@@ -45,14 +45,6 @@ export default function DashboardCard({ selectedRequest }: DashboardGridProps) {
                                     height={300}
                                     alt="Product Image"
                                     className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                        const target =
-                                            e.target as HTMLImageElement;
-                                        target.style.display = "none";
-                                        target.nextElementSibling?.classList.remove(
-                                            "hidden"
-                                        );
-                                    }}
                                 />
                             </div>
                         </div>
