@@ -27,11 +27,6 @@ export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
         setIsModalOpen(true);
     };
 
-    const closeModal = () => {
-        // setVideoUrl(null);
-        setIsModalOpen(false);
-    };
-
     const getYoutubeId = (url: string) => {
         try {
             const parsed = new URL(url);

@@ -62,6 +62,7 @@ export const useRequestDetail = (line: string) => {
                 setProcesses(result.order_process);
                 return true;
             } catch (err: unknown) {
+                console.error("Request failed:", err);
                 setSelectedRequest(null);
                 return false;
             }
