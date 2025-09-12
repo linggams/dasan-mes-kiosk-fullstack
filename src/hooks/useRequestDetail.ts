@@ -47,13 +47,12 @@ export const useRequestDetail = (line: string) => {
         async (reqId: number) => {
             try {
                 const res = await kiosk.get(`/sewing/${reqId}?line=${line}`);
-                console.log(res)
                 const result = res.data;
 
                 if (result.status === "error") {
                     toast.warning(result.errors);
                     setSelectedRequest(null);
-                    return;
+                    return false;
                 }
 
                 // const detail = result.data;
@@ -61,9 +60,10 @@ export const useRequestDetail = (line: string) => {
                 result.process_summary ??= {};
                 setSelectedRequest(result);
                 setProcesses(result.order_process);
+                return true;
             } catch (err: unknown) {
-                console.error(err);
                 setSelectedRequest(null);
+                return false;
             }
         },
         [line]
@@ -77,11 +77,18 @@ export const useRequestDetail = (line: string) => {
     useEffect(() => {
         if (!selectedRequestId) return;
 
-        const interval = setInterval(() => {
-            fetchRequestDetail(selectedRequestId);
+        let isActive = true;
+        const interval = setInterval(async () => {
+            const ok = await fetchRequestDetail(selectedRequestId);
+            if (!ok && isActive) {
+                clearInterval(interval);
+            }
         }, 3000);
 
-        return () => clearInterval(interval);
+        return () => {
+            isActive = false;
+            clearInterval(interval);
+        };
     }, [selectedRequestId, fetchRequestDetail]);
 
     return {

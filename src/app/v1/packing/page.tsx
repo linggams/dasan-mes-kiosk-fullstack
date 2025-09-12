@@ -25,7 +25,7 @@ export default function PackingPage() {
             const now = new Date();
             setDate(now.toLocaleDateString());
             setTime(now.toLocaleTimeString());
-        }, 1000);
+        }, 6000);
 
         return () => clearInterval(interval);
     }, []);

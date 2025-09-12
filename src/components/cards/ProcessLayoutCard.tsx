@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import YouTube from "react-youtube";
 import { ProcessLayout } from "@/types/request";
 import {
@@ -27,13 +28,23 @@ export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
     };
 
     const closeModal = () => {
-        setVideoUrl(null);
+        // setVideoUrl(null);
         setIsModalOpen(false);
     };
 
     const getYoutubeId = (url: string) => {
-        const match = url.match(/(?:\?v=|\.be\/)([a-zA-Z0-9_-]+)/);
-        return match ? match[1] : null;
+        try {
+            const parsed = new URL(url);
+            if (parsed.hostname.includes("youtu.be")) {
+                return parsed.pathname.slice(1);
+            }
+            if (parsed.hostname.includes("youtube.com")) {
+                return parsed.searchParams.get("v");
+            }
+            return null;
+        } catch {
+            return null;
+        }
     };
 
     if (!data || data.length === 0) {
@@ -49,86 +60,6 @@ export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
             <Card className="mt-4">
                 <CardContent className="p-0">
                     <div className="h-[calc(100vh-300px)] overflow-y-auto">
-                        {/* <table className="min-w-[1000px] w-full text-sm text-left border border-gray-300 rounded-lg overflow-hidden">
-                        <thead className="bg-gray-50 text-gray-700">
-                            <tr>
-                                <th className="px-3 py-2 border border-gray-300">
-                                    No
-                                </th>
-                                <th className="px-3 py-2 border border-gray-300">
-                                    Process
-                                </th>
-                                <th className="px-3 py-2 border border-gray-300">
-                                    Machine Type
-                                </th>
-                                <th className="px-3 py-2 border border-gray-300">
-                                    Class
-                                </th>
-                                <th className="px-3 py-2 border border-gray-300">
-                                    Tooling
-                                </th>
-                                <th className="px-3 py-2 border border-gray-300">
-                                    Standard Time
-                                </th>
-                                <th className="px-3 py-2 border border-gray-300 text-center">
-                                    Video
-                                </th>
-                                <th className="px-3 py-2 border border-gray-300">
-                                    Man Power
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-gray-800">
-                            {data.map((row) => (
-                                <tr
-                                    key={row.no}
-                                    className="bg-white hover:bg-gray-50 transition"
-                                    style={{
-                                        backgroundColor:
-                                            row.highlight || "white",
-                                    }}
-                                >
-                                    <td className="px-3 py-2 border border-gray-300">
-                                        {row.no}
-                                    </td>
-                                    <td className="px-3 py-2 border border-gray-300">
-                                        {row.process}
-                                    </td>
-                                    <td className="px-3 py-2 border border-gray-300">
-                                        {row.machineType}
-                                    </td>
-                                    <td className="px-3 py-2 border border-gray-300">
-                                        {row.classType}
-                                    </td>
-                                    <td className="px-3 py-2 border border-gray-300">
-                                        {row.tooling}
-                                    </td>
-                                    <td className="px-3 py-2 border border-gray-300">
-                                        {row.standardTime}
-                                    </td>
-                                    <td className="px-3 py-2 border border-gray-300 text-center">
-                                        {row.video ? (
-                                            <button
-                                                onClick={() =>
-                                                    row.video &&
-                                                    openModal(row.video)
-                                                }
-                                                className="text-red-500 hover:text-red-600"
-                                                title="Watch video"
-                                            >
-                                                <Youtube className="w-5 h-5 mx-auto" />
-                                            </button>
-                                        ) : (
-                                            "-"
-                                        )}
-                                    </td>
-                                    <td className="px-3 py-2 border border-gray-300">
-                                        {row.manPower}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table> */}
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -165,9 +96,14 @@ export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
                                 {data.map((row) => (
                                     <TableRow
                                         key={row.no}
-                                        className={
-                                            row.highlight ? "bg-yellow-50" : ""
-                                        }
+                                        style={{
+                                            backgroundColor: row.highlight
+                                                ? `${row.highlight}40`
+                                                : "transparent",
+                                            borderLeft: row.highlight
+                                                ? `6px solid ${row.highlight}`
+                                                : undefined,
+                                        }}
                                     >
                                         <TableCell className="text-center font-medium text-lg">
                                             {row.no}
@@ -233,8 +169,17 @@ export default function ProcessLayoutCard({ data }: ProcessLayoutCardProps) {
                 </CardContent>
             </Card>
 
-            <Dialog open={isModalOpen} onOpenChange={closeModal}>
+            <Dialog
+                open={isModalOpen}
+                onOpenChange={(open) => {
+                    setIsModalOpen(open);
+                    if (!open) setVideoUrl(null);
+                }}
+            >
                 <DialogContent className="p-0 z-[9999] bg-white w-auto max-w-none h-auto max-h-none m-auto">
+                    <VisuallyHidden>
+                        <DialogTitle>Process Video</DialogTitle>
+                    </VisuallyHidden>
                     {videoUrl && (
                         <div className="aspect-video w-[900px]">
                             <YouTube

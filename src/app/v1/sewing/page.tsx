@@ -42,7 +42,7 @@ export default function SewingPage() {
             const now = new Date();
             setDate(now.toLocaleDateString());
             setTime(now.toLocaleTimeString());
-        }, 1000);
+        }, 60000);
 
         return () => clearInterval(interval);
     }, []);

@@ -66,9 +66,16 @@ export default function Dashboard() {
     const { requests } = useRequestList(line, refetchSignal);
 
     // Get active tab
-    const [activeTab, setActiveTab] = useState<string>(() =>
-        requests.length > 0 ? requests[0].id.toString() : ""
-    );
+    // const [activeTab, setActiveTab] = useState<string>(() =>
+    //     requests.length > 0 ? requests[0].id.toString() : ""
+    // );
+    const [activeTab, setActiveTab] = useState<string>("");
+
+    useEffect(() => {
+        if (requests.length > 0 && !activeTab) {
+            setActiveTab(requests[0].id.toString());
+        }
+    }, [requests, activeTab]);
 
     // Get defect types
     const defaultDefectData = Array.isArray(defectTypes)
@@ -159,7 +166,7 @@ export default function Dashboard() {
         <div
             className="flex min-h-screen flex-col select-none"
             style={{
-                touchAction: "none",
+                // touchAction: "none",
                 overflow: "hidden",
                 position: "fixed",
                 top: 0,

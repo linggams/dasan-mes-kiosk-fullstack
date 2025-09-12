@@ -8,7 +8,7 @@ export default function RealtimeClock() {
     useEffect(() => {
         const interval = setInterval(() => {
             setDateTime(new Date());
-        }, 1000);
+        }, 60000);
 
         return () => clearInterval(interval);
     }, []);
