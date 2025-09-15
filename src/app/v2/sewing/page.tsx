@@ -243,39 +243,44 @@ export default function Dashboard() {
                 {requests.length > 0 && (
                     <div className="mb-4">
                         <Tabs value={activeTab} onValueChange={setActiveTab}>
-                            <TabsList className="flex w-auto gap-1">
-                                {requests.map((request) => (
-                                    <TabsTrigger
-                                        key={request.id}
-                                        value={request.id.toString()}
-                                        className="flex items-center px-3 py-2 rounded-md data-[state=active]:bg-white data-[state=active]:shadow"
-                                        onClick={() =>
-                                            selectRequest?.(request.id)
-                                        }
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <div
-                                                className={`w-2 h-2 rounded-full ${
-                                                    request.status === "pending"
-                                                        ? "bg-yellow-500"
-                                                        : request.status ===
-                                                          "rejected"
-                                                        ? "bg-red-500"
-                                                        : request.status ===
-                                                          "approved"
-                                                        ? "bg-green-500"
-                                                        : "bg-gray-400"
-                                                }`}
-                                            />
-                                            <span className="font-medium whitespace-nowrap">
-                                                {request.order_code} |{" "}
-                                                {request.code} | {request.buyer}{" "}
-                                                | {request.style}
-                                            </span>
-                                        </div>
-                                    </TabsTrigger>
-                                ))}
-                            </TabsList>
+                            <div className="w-full overflow-x-auto">
+                                <TabsList className="flex w-max gap-1 pb-5">
+                                    {requests.map((request) => (
+                                        <TabsTrigger
+                                            key={request.id}
+                                            value={request.id.toString()}
+                                            onClick={() =>
+                                                selectRequest?.(request.id)
+                                            }
+                                            className="flex items-center px-3 py-3 rounded-md whitespace-nowrap
+                                                    data-[state=active]:bg-black data-[state=active]:text-white"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <div
+                                                    className={`w-2 h-2 rounded-full ${
+                                                        request.status ===
+                                                        "pending"
+                                                            ? "bg-yellow-500"
+                                                            : request.status ===
+                                                              "rejected"
+                                                            ? "bg-red-500"
+                                                            : request.status ===
+                                                              "approved"
+                                                            ? "bg-green-500"
+                                                            : "bg-gray-400"
+                                                    }`}
+                                                />
+                                                <span className="font-medium whitespace-nowrap">
+                                                    {request.order_code} |{" "}
+                                                    {request.code} |{" "}
+                                                    {request.buyer} |{" "}
+                                                    {request.style}
+                                                </span>
+                                            </div>
+                                        </TabsTrigger>
+                                    ))}
+                                </TabsList>
+                            </div>
 
                             {requests.map((request) => (
                                 <TabsContent

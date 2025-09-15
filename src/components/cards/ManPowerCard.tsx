@@ -24,20 +24,22 @@ export default function ManPowerCard({ data }: Props) {
                     </span>
                 </div>
 
-                <div className="space-y-3 mt-6">
-                    {data?.map((item, index) => (
-                        <div
-                            key={index}
-                            className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100"
-                        >
-                            <span className="text-gray-700 font-medium">
-                                {item.class_name}
-                            </span>
-                            <span className="text-2xl font-bold text-blue-500">
-                                {item.total}
-                            </span>
-                        </div>
-                    ))}
+                <div className="mt-6 max-h-120 overflow-y-auto pr-1">
+                    <div className="space-y-3 mt-6">
+                        {data?.map((item, index) => (
+                            <div
+                                key={index}
+                                className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100"
+                            >
+                                <span className="text-gray-700 font-medium">
+                                    {item.class_name}
+                                </span>
+                                <span className="text-2xl font-bold text-blue-500">
+                                    {item.total}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </CardContent>
         </Card>
