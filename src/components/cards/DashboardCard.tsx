@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { PieChart } from "@/components/ui/pie-chart";
 import { cn } from "@/lib/utils";
-import { Textfit } from "react-textfit";
 
 interface OrderInfo {
     progress_percentage: number;
@@ -157,19 +156,12 @@ function MetricCard({
     return (
         <Card className="m-0.5">
             <CardContent className="flex flex-col gap-1 p-3">
-                <Textfit
-                    mode="single"
-                    max={32}
-                    className="font-bold text-black"
-                >
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-black">
                     {title}
-                </Textfit>
-
-                <Textfit
-                    mode="single"
-                    max={144}
+                </p>
+                <p
                     className={cn(
-                        "font-bold leading-tight",
+                        "text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold",
                         highlight === "red"
                             ? "text-red-500"
                             : highlight === "blue"
@@ -181,7 +173,7 @@ function MetricCard({
                 >
                     {value?.toLocaleString("en-US") ?? "-"}
                     {suffix}
-                </Textfit>
+                </p>
             </CardContent>
         </Card>
     );

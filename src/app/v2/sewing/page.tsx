@@ -244,7 +244,7 @@ export default function Dashboard() {
                     <div className="mb-4">
                         <Tabs value={activeTab} onValueChange={setActiveTab}>
                             <div className="w-full overflow-x-auto">
-                                <TabsList className="flex w-max gap-1 mb-1">
+                                <TabsList className="flex w-max gap-1">
                                     {requests.map((request) => (
                                         <TabsTrigger
                                             key={request.id}
